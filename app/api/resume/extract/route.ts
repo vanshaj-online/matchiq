@@ -1,0 +1,50 @@
+import { PdfReader } from "pdfreader";
+
+export async function POST(req: Request) {
+    const formData = await req.formData()
+
+    const file = formData.get('resume') as File;
+
+    if (!file) {
+        return Response.json({
+            success: false,
+            message: 'No file uploaded'
+        },
+            {
+                status: 400
+            })
+    }
+
+    const bytes = await file.arrayBuffer()
+    const buffer = Buffer.from(bytes)
+
+    let text = ''
+
+    await new Promise<void>((resolve, reject) => {
+        new PdfReader().parseBuffer(buffer, (err, item) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+
+            if (!item) {
+                resolve();
+                return;
+            }
+
+            if (item.text) {
+                text += item.text + " ";
+            }
+        });
+    });
+
+    const cleanedText = text
+        .replace(/\s+/g, " ")
+        .trim();
+
+    return Response.json({
+        success: true,
+        text: cleanedText
+    });
+
+}
