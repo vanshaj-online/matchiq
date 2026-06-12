@@ -1,338 +1,392 @@
 import { Scan } from "@/models/scan.model";
 import connectDB from "@/lib/db";
+import Link from "next/link";
 import {
-    Briefcase,
-    Sparkles,
-    AlertCircle,
-    Check,
-    Zap,
-    Target,
-    Compass,
-    BookOpen,
-    HelpCircle,
+  AlertCircle,
+  HelpCircle,
+  ArrowLeft,
 } from "lucide-react";
 import type { AnalysisResult } from "@/lib/validators/analysis";
-
-export default async function NewScanPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = await params;
-    
-    let scan = null;
-    let result: AnalysisResult | null = null;
-    let error: string | null = null;
-
-    try {
-        await connectDB();
-        scan = await Scan.findById(id);
-        if (scan) {
-            result = scan.analysis;
-        }
-    } catch (err: any) {
-        error = err.message || "Failed to fetch scan data";
-    }
-
-    if (!scan && !error) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50/50">
-                <div className="text-center p-8 bg-white border border-gray-100 rounded-2xl shadow-xs">
-                    <h2 className="text-lg font-bold text-black mb-1">Scan not found</h2>
-                    <p className="text-xs text-gray-500">The requested scan ID does not exist or has been deleted.</p>
-                </div>
-            </div>
-        );
-    }
+import { tone } from "@/lib/colorTone";
 
 
-    // Style helper based on ATS Match Score
-    const getScoreColor = (score: number) => {
-        if (score >= 80) return {
-            ring: "stroke-emerald-500 text-emerald-500",
-            text: "text-emerald-700",
-            bg: "bg-emerald-50/50",
-            border: "border-emerald-100",
-            badge: "bg-emerald-100 text-emerald-800 border-emerald-200"
-        };
-        if (score >= 60) return {
-            ring: "stroke-blue-500 text-blue-500",
-            text: "text-blue-700",
-            bg: "bg-blue-50/50",
-            border: "border-blue-100",
-            badge: "bg-blue-100 text-blue-800 border-blue-200"
-        };
-        if (score >= 40) return {
-            ring: "stroke-amber-500 text-amber-500",
-            text: "text-amber-700",
-            bg: "bg-amber-50/50",
-            border: "border-amber-100",
-            badge: "bg-amber-100 text-amber-800 border-amber-200"
-        };
-        return {
-            ring: "stroke-rose-500 text-rose-500",
-            text: "text-rose-700",
-            bg: "bg-rose-50/50",
-            border: "border-rose-100",
-            badge: "bg-rose-100 text-rose-800 border-rose-200"
-        };
-    };
+export default async function ScanResultPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
 
-    const colors = result ? getScoreColor(result.matchScore) : null;
-    const radius = 42;
-    const strokeWidth = 8;
-    const circumference = 2 * Math.PI * radius;
-    const strokeDashoffset = result ? circumference - (result.matchScore / 100) * circumference : 0;
+  let scan: any = null;
+  let result: AnalysisResult | null = null;
+  let error: string | null = null;
 
+  try {
+    await connectDB();
+    scan = await Scan.findById(id);
+    if (scan) result = scan.analysis;
+    console.log(result)
+  } catch (err: any) {
+    error = err.message || "Failed to fetch scan data";
+  }
+
+  if (!scan && !error) {
     return (
-        <div className="min-h-screen bg-gray-50/50">
-
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Error Box */}
-                {error && (
-                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-800 flex items-start space-x-3 text-sm animate-fadeIn">
-                        <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
-                        <div className="grow">
-                            <span className="font-semibold">Something went wrong:</span> {error}
-                        </div>
-                    </div>
-                )}
-
-                {/* Results Screen Layout */}
-                {result && (
-                    <div className="space-y-8 animate-fadeIn">
-                        {/* Summary Score Card */}
-                        <div className={`border ${colors?.border} ${colors?.bg} p-6 sm:p-8 rounded-3xl`}>
-                            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-                                <div className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
-                                    {/* Score Radial Visual */}
-                                    <div className="relative shrink-0 flex items-center justify-center bg-white p-2 rounded-full shadow-xs border border-gray-100">
-                                        <svg className="w-28 h-28 transform -rotate-90">
-                                            <circle
-                                                cx="56"
-                                                cy="56"
-                                                r={radius}
-                                                className="stroke-gray-100"
-                                                strokeWidth={strokeWidth}
-                                                fill="transparent"
-                                            />
-                                            <circle
-                                                cx="56"
-                                                cy="56"
-                                                r={radius}
-                                                className={`transition-all duration-1000 ${colors?.ring}`}
-                                                strokeWidth={strokeWidth}
-                                                strokeDasharray={circumference}
-                                                strokeDashoffset={strokeDashoffset}
-                                                strokeLinecap="round"
-                                                fill="transparent"
-                                            />
-                                        </svg>
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <span className="text-2xl font-extrabold text-black">{result.matchScore}%</span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
-                                            <span className={`text-[10px] font-extrabold tracking-wider uppercase px-2.5 py-1 rounded-full ${colors?.badge}`}>
-                                                {result.matchVerdict}
-                                            </span>
-                                            <span className="text-xs text-gray-500 font-medium">ATS Match Grade</span>
-                                        </div>
-                                        <h2 className="text-2xl font-black text-black">
-                                            ATS Compatibility Summary
-                                        </h2>
-                                        <p className="text-sm text-gray-600 max-w-xl mt-1.5 leading-relaxed">
-                                            Your match analysis is ready. We've verified your resume against the target requirements using Gemini AI.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Sub-Metric Score Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {[
-                                { title: "Keyword Match", val: result.scoreBreakdown.keywordMatch, desc: "Presence of essential keywords", icon: Target },
-                                { title: "Experience Alignment", val: result.scoreBreakdown.relevantExperience, desc: "Relevance of work history", icon: Briefcase },
-                                { title: "Skills Fit", val: result.scoreBreakdown.skillsAlignment, desc: "Technical & core capability", icon: Compass },
-                                { title: "Education Match", val: result.scoreBreakdown.educationFit, desc: "Academic requirements status", icon: BookOpen }
-                            ].map((item, idx) => {
-                                const statColors = getScoreColor(item.val);
-                                return (
-                                    <div key={idx} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-xs flex flex-col justify-between">
-                                        <div>
-                                            <div className="flex justify-between items-start mb-2">
-                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{item.title}</span>
-                                                <item.icon className="h-4 w-4 text-gray-400" />
-                                            </div>
-                                            <div className="flex items-baseline space-x-1">
-                                                <span className="text-2xl font-extrabold text-black">{item.val}</span>
-                                                <span className="text-xs text-gray-400 font-medium">/100</span>
-                                            </div>
-                                            <p className="text-xs text-gray-500 mt-1 leading-snug">{item.desc}</p>
-                                        </div>
-                                        <div className="w-full bg-gray-100 rounded-full h-1.5 mt-4">
-                                            <div
-                                                className="h-1.5 rounded-full bg-current transition-all duration-500"
-                                                style={{ width: `${item.val}%`, color: statColors.ring.split(" ")[1] }}
-                                            />
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-
-                        {/* Main Feedback & Keyword Panels */}
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                            {/* Strengths & Quick Wins */}
-                            <div className="lg:col-span-5 space-y-6">
-                                {/* Strengths */}
-                                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs">
-                                    <h3 className="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-lg flex items-center space-x-2 mb-4 w-fit">
-                                        <Check className="h-4 w-4 shrink-0 text-emerald-600" />
-                                        <span>Top Strengths</span>
-                                    </h3>
-                                    <ul className="space-y-3">
-                                        {result.topStrengths.map((str, i) => (
-                                            <li key={i} className="flex items-start space-x-2 text-sm text-gray-700">
-                                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-2" />
-                                                <span>{str}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-
-                                {/* Quick Wins */}
-                                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs">
-                                    <h3 className="text-xs font-bold text-blue-800 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-lg flex items-center space-x-2 mb-4 w-fit">
-                                        <Zap className="h-4 w-4 shrink-0 text-blue-600" />
-                                        <span>Quick Wins</span>
-                                    </h3>
-                                    <ul className="space-y-3">
-                                        {result.quickWins.map((win, i) => (
-                                            <li key={i} className="flex items-start space-x-2 text-sm text-gray-700">
-                                                <span className="h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0 mt-2" />
-                                                <span>{win}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-
-                            {/* Missing Keywords Details */}
-                            <div className="lg:col-span-7 bg-white p-6 rounded-2xl border border-gray-100 shadow-xs">
-                                <h3 className="text-base font-bold text-gray-900 mb-2 flex items-center space-x-2">
-                                    <Target className="h-5 w-5 text-gray-600" />
-                                    <span>Missing Keywords to Target</span>
-                                </h3>
-                                <p className="text-xs text-gray-500 mb-6 leading-relaxed">
-                                    These are specific keywords from the Job Description missing from your resume. Incorporating them naturally will improve ATS match scores.
-                                </p>
-
-                                <div className="space-y-4">
-                                    {result.missingKeywords.map((kw, i) => {
-                                        const badgeStyle =
-                                            kw.importance === "critical"
-                                                ? "bg-rose-50 text-rose-800 border-rose-100"
-                                                : kw.importance === "important"
-                                                    ? "bg-amber-50 text-amber-800 border-amber-100"
-                                                    : "bg-blue-50 text-blue-800 border-blue-100";
-                                        return (
-                                            <div key={i} className="p-3 border border-gray-100 rounded-xl hover:bg-gray-50/50 transition-colors">
-                                                <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
-                                                    <span className="text-sm font-bold text-gray-900 font-mono bg-gray-50 px-2 py-0.5 rounded">
-                                                        {kw.keyword}
-                                                    </span>
-                                                    <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${badgeStyle}`}>
-                                                        {kw.importance}
-                                                    </span>
-                                                </div>
-                                                <p className="text-xs text-gray-600 leading-normal">
-                                                    {kw.context}
-                                                </p>
-                                            </div>
-                                        );
-                                    })}
-                                    {result.missingKeywords.length === 0 && (
-                                        <div className="text-center py-8 text-gray-400 text-sm">
-                                            No missing keywords identified. Your resume matches perfectly!
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Section Analysis Breakdown */}
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs">
-                            <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center space-x-2">
-                                <BookOpen className="h-5 w-5 text-gray-600" />
-                                <span>ATS Review by Section</span>
-                            </h3>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {[
-                                    { title: "Summary / Objective", text: result.sectionFeedback.summary },
-                                    { title: "Experience Details", text: result.sectionFeedback.experience },
-                                    { title: "Skills Listing", text: result.sectionFeedback.skills },
-                                    { title: "Education Fit", text: result.sectionFeedback.education }
-                                ].map((item, idx) => (
-                                    <div key={idx} className="p-4 border border-gray-100 rounded-xl bg-gray-50/30">
-                                        <h4 className="text-sm font-bold text-gray-800 mb-1.5">{item.title}</h4>
-                                        <p className="text-xs text-gray-600 leading-relaxed">{item.text}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Resume Bullet Point Optimization */}
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs">
-                            <h3 className="text-base font-bold text-gray-900 mb-2 flex items-center space-x-2">
-                                <Sparkles className="h-5 w-5 text-gray-600" />
-                                <span>Bullet Point Optimization Suggestions</span>
-                            </h3>
-                            <p className="text-xs text-gray-500 mb-6 leading-relaxed">
-                                Refine specific phrasing on your resume using these suggestions to align better with the job's context.
-                            </p>
-
-                            <div className="space-y-6">
-                                {result.rewriteSuggestions.map((sug, i) => (
-                                    <div key={i} className="border border-gray-100 rounded-2xl overflow-hidden shadow-2xs">
-                                        <div className="grid grid-cols-1 lg:grid-cols-2">
-                                            {/* Original Resume Bullet */}
-                                            <div className="p-4 bg-rose-50/20 border-b lg:border-b-0 lg:border-r border-gray-100">
-                                                <span className="text-[9px] font-extrabold text-rose-700 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                                    Original Bullet Point
-                                                </span>
-                                                <p className="text-xs text-gray-600 mt-2 line-through leading-relaxed italic">
-                                                    "{sug.original}"
-                                                </p>
-                                            </div>
-                                            {/* Rewritten Optimized Bullet */}
-                                            <div className="p-4 bg-emerald-50/10">
-                                                <span className="text-[9px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center space-x-1 w-fit">
-                                                    <Sparkles className="h-3 w-3 shrink-0 text-emerald-600" />
-                                                    <span>ATS Optimized Suggestion</span>
-                                                </span>
-                                                <p className="text-xs text-gray-800 font-semibold mt-2 leading-relaxed">
-                                                    "{sug.rewritten}"
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="p-3 bg-gray-50 border-t border-gray-100 flex items-start space-x-2 text-xs">
-                                            <HelpCircle className="h-4 w-4 text-gray-400 shrink-0 mt-0.5" />
-                                            <p className="text-gray-500 leading-normal">
-                                                <span className="font-semibold text-gray-700">Why this helps:</span> {sug.reason}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))}
-                                {result.rewriteSuggestions.length === 0 && (
-                                    <div className="text-center py-8 text-gray-400 text-sm">
-                                        No bullet points require rewriting! Excellent phrasing.
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </main>
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="paper-sheet p-10 text-center max-w-md">
+          <span className="paper-label">404 · not on file</span>
+          <h2 className="paper-display text-2xl font-bold text-paper-ink mt-2 mb-2">
+            Scan not found
+          </h2>
+          <p className="text-sm text-paper-muted">
+            The requested scan ID does not exist or has been deleted.
+          </p>
+          <Link href="/dashboard" className="paper-btn paper-btn-primary mt-6">
+            <ArrowLeft className="h-4 w-4" /> Back to ATS Report
+          </Link>
         </div>
+      </div>
     );
+  }
+
+  const colors = result ? tone(result.matchScore) : null;
+  const radius = 44;
+  const strokeWidth = 6;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = result
+    ? circumference - (result.matchScore / 100) * circumference
+    : 0;
+
+  return (
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-50 bg-paper-cream/85 backdrop-blur-md border-b border-paper-rule">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center space-x-3">
+            <div className="bg-paper-ink text-white px-2 py-1 paper-mono text-xs tracking-[0.18em]">
+              MIQ
+            </div>
+            <span className="paper-display font-extrabold text-lg text-paper-ink tracking-tight">
+              MatchIQ
+            </span>
+          </Link>
+          <Link href="/dashboard" className="paper-btn paper-btn-ghost">
+            <ArrowLeft className="h-4 w-4" /> ATS Report
+          </Link>
+        </div>
+      </header>
+
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+        {error && (
+          <div className="p-4 border border-paper-danger bg-[#fdecec] text-paper-danger flex items-start gap-3 text-sm rounded-sm">
+            <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+            <div>
+              <span className="paper-mono uppercase tracking-wider text-xs">
+                Error ·{" "}
+              </span>
+              {error}
+            </div>
+          </div>
+        )}
+
+        {result && colors && (
+          <div className="space-y-10 animate-fadeIn">
+            {/* Masthead verdict */}
+            <section className="paper-sheet p-8 sm:p-10 relative overflow-hidden">
+              <div className="absolute top-4 left-6 paper-label">
+                Report
+              </div>
+              <div className="absolute top-4 right-6 paper-label">
+                ATS · compatibility
+              </div>
+
+              <div className="mt-8 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-8">
+                <div className="text-center sm:text-left">
+                  <span
+                    className={`paper-stamp ${colors.text}`}
+                  >
+                    {result.matchVerdict}
+                  </span>
+                  <h1 className="paper-display text-4xl sm:text-5xl font-bold tracking-tight text-paper-ink mt-4 leading-none">
+                    Compatibility
+                    <br />
+                    Report
+                  </h1>
+                  <p className="text-sm text-paper-muted mt-4 max-w-md leading-relaxed">
+                    Your match analysis is filed. Below: the headline score,
+                    section-by-section verdicts, missing keywords, and concrete
+                    rewrites.
+                  </p>
+                </div>
+
+                <div className="relative shrink-0 flex items-center justify-center">
+                  <svg className="w-32 h-32 -rotate-90">
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r={radius}
+                      className="text-paper-hairline"
+                      stroke="currentColor"
+                      strokeWidth={strokeWidth}
+                      fill="transparent"
+                    />
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r={radius}
+                      className={`transition-all duration-1000 ${colors.ring}`}
+                      stroke="currentColor"
+                      strokeWidth={strokeWidth}
+                      strokeDasharray={circumference}
+                      strokeDashoffset={strokeDashoffset}
+                      strokeLinecap="butt"
+                      fill="transparent"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="paper-display text-3xl font-bold text-paper-ink">
+                      {result.matchScore}
+                    </span>
+                    <span className="paper-label mt-1">/ 100</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Sub-metrics */}
+            <section>
+              <div className="flex items-center justify-between mb-4 flex-wrap">
+                <span className="paper-label whitespace-nowrap">section i · sub-scores</span>
+                <span className="paper-label whitespace-nowrap">four metrics</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  {
+                    title: "Keyword Match",
+                    val: result.scoreBreakdown.keywordMatch,
+                    desc: "Presence of essential keywords",
+                  },
+                  {
+                    title: "Experience",
+                    val: result.scoreBreakdown.relevantExperience,
+                    desc: "Relevance of work history",
+                  },
+                  {
+                    title: "Skills Fit",
+                    val: result.scoreBreakdown.skillsAlignment,
+                    desc: "Technical & core capability",
+                  },
+                  {
+                    title: "Education",
+                    val: result.scoreBreakdown.educationFit,
+                    desc: "Academic requirements",
+                  },
+                ].map((item, idx) => {
+                  const t = tone(item.val);
+                  return (
+                    <div key={idx} className="paper-sheet p-5 flex flex-col gap-3">
+                      <div className="flex justify-between items-start">
+                        <span className="paper-label">{item.title}</span>
+                      </div>
+                      <div className="flex items-baseline gap-1">
+                        <span className="paper-display text-3xl font-bold text-paper-ink">
+                          {item.val}
+                        </span>
+                        <span className="paper-mono text-xs text-paper-muted">
+                          /100
+                        </span>
+                      </div>
+                      <p className="text-xs text-paper-muted leading-snug">
+                        {item.desc}
+                      </p>
+                      <div className="w-full h-[3px] bg-paper-hairline mt-1">
+                        <div
+                          className={`h-[3px] ${t.bar} transition-all duration-500`}
+                          style={{ width: `${item.val}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* Strengths / Quick wins / Missing kw */}
+            <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className="lg:col-span-5 space-y-6">
+                <div className="paper-sheet p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="paper-label">section ii · strengths</span>
+                  </div>
+                  <ul className="space-y-3">
+                    {result.topStrengths.map((str, i) => (
+                      <li
+                        key={i}
+                        className="flex items-start gap-3 text-sm text-paper-text leading-relaxed"
+                      >
+                        <span className="paper-mono text-xs text-paper-subtle mt-0.5">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span>{str}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="paper-sheet p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="paper-label">section iii · quick wins</span>
+                  </div>
+                  <ul className="space-y-3">
+                    {result.quickWins.map((win, i) => (
+                      <li
+                        key={i}
+                        className="flex items-start gap-3 text-sm text-paper-text leading-relaxed"
+                      >
+                        <span className="paper-mono text-xs text-paper-subtle mt-0.5">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span>{win}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="lg:col-span-7 paper-sheet p-6">
+                <div className="flex items-center justify-between mb-2 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <span className="paper-label whitespace-nowrap">section iv · missing keywords</span>
+                  </div>
+                  <span className="paper-label whitespace-nowrap">{result.missingKeywords.length} items</span>
+                </div>
+                <p className="text-xs text-paper-muted mb-5 leading-relaxed">
+                  Keywords from the job description that did not appear on your
+                  resume. Incorporate naturally to improve ATS match.
+                </p>
+
+                <div className="divide-y divide-dashed divide-paper-rule">
+                  {result.missingKeywords.map((kw, i) => {
+                    const badge =
+                      kw.importance === "critical"
+                        ? "border-[color:var(--color-paper-danger)] text-[color:var(--color-paper-danger)]"
+                        : kw.importance === "important"
+                          ? "border-[color:var(--color-paper-warning)] text-[color:var(--color-paper-warning)]"
+                          : "border-[color:var(--color-paper-secondary)] text-[color:var(--color-paper-secondary)]";
+                    return (
+                      <div key={i} className="py-7 last:pb-0 first:border-t first:border-paper-hairline">
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                          <span className="paper-mono text-[13px] text-paper-ink bg-paper-cream-soft px-2 py-0.5 border border-paper-hairline rounded-sm">
+                            {kw.keyword}
+                          </span>
+                          <span
+                            className={`paper-mono text-[10px] tracking-[0.14em] uppercase px-2 py-0.5 border rounded-sm ${badge}`}
+                          >
+                            {kw.importance}
+                          </span>
+                        </div>
+                        <p className="text-xs text-paper-muted leading-relaxed">
+                          {kw.context}
+                        </p>
+                      </div>
+                    );
+                  })}
+                  {result.missingKeywords.length === 0 && (
+                    <div className="text-center py-8 paper-label">
+                      No missing keywords — match is clean.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+
+            {/* Section feedback */}
+            <section className="paper-sheet p-6">
+              <div className="flex items-center gap-2 mb-5">
+                <span className="paper-label">section v · review by part</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                {[
+                  { title: "Summary / Objective", text: result.sectionFeedback.summary },
+                  { title: "Experience", text: result.sectionFeedback.experience },
+                  { title: "Skills", text: result.sectionFeedback.skills },
+                  { title: "Education", text: result.sectionFeedback.education },
+                ].map((item, idx) => (
+                  <div key={idx} className="border-l-2 border-paper-ink pl-4">
+                    <h4 className="paper-display font-bold text-sm text-paper-ink mb-1">
+                      {item.title}
+                    </h4>
+                    <p className="text-xs text-paper-muted leading-relaxed">
+                      {item.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Rewrites */}
+            <section className="paper-sheet p-6">
+              <div className="flex items-center justify-between mb-2 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <span className="paper-label whitespace-nowrap">section vi · rewrites</span>
+                </div>
+                <span className="paper-label whitespace-nowrap">
+                  {result.rewriteSuggestions.length} drafts
+                </span>
+              </div>
+              <p className="text-xs text-paper-muted mb-5 leading-relaxed">
+                Refine your phrasing using these suggested edits. Pencil them in.
+              </p>
+
+              <div className="space-y-5">
+                {result.rewriteSuggestions.map((sug, i) => (
+                  <article
+                    key={i}
+                    className="border border-paper-hairline rounded-sm overflow-hidden"
+                  >
+                    <div className="grid grid-cols-1 lg:grid-cols-2">
+                      <div className="p-4 lg:border-r border-b lg:border-b-0 border-dashed border-paper-rule bg-paper-cream-soft">
+                        <span className="paper-label text-paper-danger">
+                          original · struck
+                        </span>
+                        <p className="text-xs text-paper-muted mt-2 line-through leading-relaxed italic font-serif">
+                          &ldquo;{sug.original}&rdquo;
+                        </p>
+                      </div>
+                      <div className="p-4">
+                        <span className="paper-label text-paper-success flex items-center gap-1">
+                          rewritten
+                        </span>
+                        <p className="text-sm text-paper-ink font-medium mt-2 leading-relaxed">
+                          &ldquo;{sug.rewritten}&rdquo;
+                        </p>
+                      </div>
+                    </div>
+                    <div className="p-3 border-t border-dashed border-paper-rule flex items-start gap-2 text-xs bg-paper-cream">
+                      <HelpCircle className="h-3.5 w-3.5 text-paper-muted shrink-0 mt-0.5" />
+                      <p className="text-paper-muted leading-relaxed">
+                        <span className="paper-mono uppercase tracking-wider text-[10px] text-paper-ink mr-1">
+                          why ·
+                        </span>
+                        {sug.reason}
+                      </p>
+                    </div>
+                  </article>
+                ))}
+                {result.rewriteSuggestions.length === 0 && (
+                  <div className="text-center py-8 paper-label">
+                    No rewrites suggested.
+                  </div>
+                )}
+              </div>
+            </section>
+
+            <div className="text-center pt-6 border-t border-dashed border-paper-rule paper-label">
+              — end of report —
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
 }

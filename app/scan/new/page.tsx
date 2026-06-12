@@ -4,330 +4,266 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-    Upload,
-    FileText,
-    Briefcase,
-    Sparkles,
-    CheckCircle2,
-    AlertCircle,
-    Loader2,
-    ArrowLeft,
-    Check,
-    Zap,
-    Target,
-    Compass,
-    BookOpen,
-    HelpCircle,
-    RotateCcw
+  FileText,
+  Briefcase,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  ArrowLeft,
+  Upload,
 } from "lucide-react";
 import type { AnalysisResult } from "@/lib/validators/analysis";
 
 export default function NewScanPage() {
+  const [resumeText, setResumeText] = useState("");
+  const [jdText, setJdText] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [, setResult] = useState<AnalysisResult | null>(null);
+  const router = useRouter();
 
-    const [resumeText, setResumeText] = useState("");
-    const [jdText, setJdText] = useState("");
-    const [file, setFile] = useState<File | null>(null);
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
 
-    // Visual loading and response states (only UI level)
-    const [isExtracting, setIsExtracting] = useState(false);
-    const [isAnalyzing, setIsAnalyzing] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [result, setResult] = useState<AnalysisResult | null>(null);
-    const router = useRouter();
+    const uploadedFile = e.target.files?.[0] ?? null;
 
-    const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const uploadedFile = e.target.files?.[0] ?? null;
-        if (!uploadedFile) return;
+    if (!uploadedFile) return;
 
-        setFile(uploadedFile);
-        setIsExtracting(true);
-        setError(null);
+    setFile(uploadedFile);
+    setIsExtracting(true);
+    setError(null);
 
-        try {
-            const formData = new FormData();
-            formData.append('resume', uploadedFile);
+    try {
 
-            const response = await fetch('/api/resume/extract', {
-                method: 'POST',
-                body: formData
-            });
+      const formData = new FormData();
 
-            if (!response.ok) {
-                throw new Error("Failed to extract text from resume");
-            }
+      formData.append('resume', uploadedFile);
 
-            const data = await response.json();
+      const response = await fetch('/api/resume/extract', { method: 'POST', body: formData });
 
-            if (data.success) {
-                router.push(`/dashboard/scans/${data.scanId}`);
-            }
+      if (!response.ok) throw new Error("Failed to extract text from resume");
 
-            setResumeText(data.text);
+      const data = await response.json();
 
-        } catch (err: any) {
-            setError(err.message || "Failed to extract text from resume");
-        } finally {
-            setIsExtracting(false);
-        }
-    };
+      console.log(data)
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      setResumeText(data.text);
 
-        e.preventDefault();
+    } catch (err: any) {
 
-        setIsAnalyzing(true);
+      setError(err.message || "Failed to extract text from resume");
 
-        setError(null);
+    } finally {
 
-        try {
+      setIsExtracting(false);
 
-            const response = await fetch('/api/scan', {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    resumeText,
-                    jdText,
-                })
-            });
+    }
 
-            if (!response.ok) {
-                throw new Error('Failed to analyze resume. Please try again.');
-            }
+  };
 
-            const data = await response.json();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
-            console.log(data);
+    e.preventDefault();
+    setIsAnalyzing(true);
+    setError(null);
 
-            if (data.success && data.data) {
-                setResult(data.data);
-            } else {
-                throw new Error(data.message || 'Analysis failed.');
-            }
-        } catch (err: any) {
-            setError(err.message || 'Failed to analyze resume.');
-        } finally {
-            setIsAnalyzing(false);
-        }
-    };
+    try {
 
-    // Style helper based on ATS Match Score
-    const getScoreColor = (score: number) => {
-        if (score >= 80) return {
-            ring: "stroke-emerald-500 text-emerald-500",
-            text: "text-emerald-700",
-            bg: "bg-emerald-50/50",
-            border: "border-emerald-100",
-            badge: "bg-emerald-100 text-emerald-800 border-emerald-200"
-        };
-        if (score >= 60) return {
-            ring: "stroke-blue-500 text-blue-500",
-            text: "text-blue-700",
-            bg: "bg-blue-50/50",
-            border: "border-blue-100",
-            badge: "bg-blue-100 text-blue-800 border-blue-200"
-        };
-        if (score >= 40) return {
-            ring: "stroke-amber-500 text-amber-500",
-            text: "text-amber-700",
-            bg: "bg-amber-50/50",
-            border: "border-amber-100",
-            badge: "bg-amber-100 text-amber-800 border-amber-200"
-        };
-        return {
-            ring: "stroke-rose-500 text-rose-500",
-            text: "text-rose-700",
-            bg: "bg-rose-50/50",
-            border: "border-rose-100",
-            badge: "bg-rose-100 text-rose-800 border-rose-200"
-        };
-    };
+      const response = await fetch('/api/scan', {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resumeText, jdText }),
+      });
 
-    const colors = result ? getScoreColor(result.matchScore) : null;
-    const radius = 42;
-    const strokeWidth = 8;
-    const circumference = 2 * Math.PI * radius;
-    const strokeDashoffset = result ? circumference - (result.matchScore / 100) * circumference : 0;
+      if (!response.ok) throw new Error('Failed to analyze resume. Please try again.');
 
-    return (
-        <div className="min-h-screen bg-gray-50/50">
-            {/* Navigation Header */}
-            <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        <div className="bg-black text-white p-2 rounded-lg font-bold text-sm tracking-wider">
-                            MIQ
-                        </div>
-                        <span className="font-bold text-lg text-black tracking-tight">MatchIQ</span>
-                    </div>
-                    <Link
-                        href="/dashboard"
-                        className="text-sm font-semibold text-gray-600 hover:text-black transition-colors flex items-center space-x-1.5"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                        <span>Back to Dashboard</span>
-                    </Link>
-                </div>
-            </header>
+      const data = await response.json();
 
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Intro Headers */}
-                <div className="mb-8">
-                    <h1 className="text-3xl font-extrabold text-black tracking-tight">
-                        New Resume Scan
-                    </h1>
-                    <p className="text-sm text-gray-500 mt-1">
-                        Compare your resume details against the target job requirements to check ATS score compatibility and alignment.
-                    </p>
-                </div>
+      if (data.success && data.data) {
+        setResult(data.data);
+        router.push(`/dashboard/scans/${data.scanId}`)
+      }
 
-                {/* Error Box */}
-                {error && (
-                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-800 flex items-start space-x-3 text-sm animate-fadeIn">
-                        <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
-                        <div className="grow">
-                            <span className="font-semibold">Something went wrong:</span> {error}
-                        </div>
-                    </div>
-                )}
+      else throw new Error(data.message || 'Analysis failed.');
 
-                {/* Input Panel Form */}
-                <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Resume File Upload Box & Content Edit */}
-                    <div className="space-y-6">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs">
-                            <h2 className="text-base font-bold text-gray-900 mb-4 flex items-center space-x-2">
-                                <FileText className="h-5 w-5 text-gray-600" />
-                                <span>Step 1: Upload Resume</span>
-                            </h2>
+    } catch (err: any) {
 
-                            <label className="group relative flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl p-8 text-center cursor-pointer hover:border-black transition-all bg-gray-50/50 hover:bg-gray-100/20">
-                                <input
-                                    type="file"
-                                    accept=".pdf,.docx,.doc"
-                                    onChange={handleFile}
-                                    className="sr-only"
-                                />
-                                {isExtracting ? (
-                                    <div className="flex flex-col items-center space-y-3 py-4">
-                                        <Loader2 className="h-8 w-8 animate-spin text-black" />
-                                        <p className="text-sm font-semibold text-gray-900">Extracting text from resume...</p>
-                                        <p className="text-xs text-gray-500">Parsing document nodes with MatchIQ engine</p>
-                                    </div>
-                                ) : file ? (
-                                    <div className="flex flex-col items-center space-y-3 py-2">
-                                        <div className="p-3 bg-black/5 rounded-full text-black">
-                                            <FileText className="h-6 w-6" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-semibold text-gray-900 max-w-xs truncate">{file.name}</p>
-                                            <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</p>
-                                        </div>
-                                        <div className="flex items-center space-x-1.5 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full text-xs font-semibold border border-emerald-100">
-                                            <CheckCircle2 className="h-3.5 w-3.5" />
-                                            <span>Extracted successfully</span>
-                                        </div>
-                                        <span className="text-xs text-gray-400 font-medium group-hover:text-black transition-colors mt-2">
-                                            Click or drag to replace file
-                                        </span>
-                                    </div>
-                                ) : (
-                                    <div className="flex flex-col items-center space-y-3 py-4">
-                                        <div className="p-3 bg-white rounded-xl shadow-xs border border-gray-100 text-gray-500 group-hover:scale-110 transition-transform">
-                                            <Upload className="h-6 w-6" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-semibold text-gray-900">Choose a file or drag & drop</p>
-                                            <p className="text-xs text-gray-500 mt-1">Supports PDF, DOC, or DOCX (Max 10MB)</p>
-                                        </div>
-                                    </div>
-                                )}
-                            </label>
-                        </div>
+      setError(err.message || 'Failed to analyze resume.');
 
-                        {/* Extracted Text Content Field */}
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs">
-                            <div className="flex justify-between items-center mb-3">
-                                <label htmlFor="resumeText" className="text-sm font-bold text-gray-900 flex items-center space-x-2">
-                                    <FileText className="h-4.5 w-4.5 text-gray-600" />
-                                    <span>Extracted Resume Text</span>
-                                </label>
-                                {resumeText && (
-                                    <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
-                                        {resumeText.split(/\s+/).filter(Boolean).length} words
-                                    </span>
-                                )}
-                            </div>
-                            <textarea
-                                id="resumeText"
-                                value={resumeText}
-                                onChange={(e) => setResumeText(e.target.value)}
-                                rows={14}
-                                className="w-full text-sm font-mono border border-gray-200 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-gray-50/50 resize-y min-h-[300px]"
-                                placeholder="Resume Text content will be loaded here automatically once you upload a file, or you can paste your raw resume text here directly..."
-                            />
-                        </div>
-                    </div>
+    } finally {
 
-                    {/* Job Description Panel */}
-                    <div className="h-full">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs flex flex-col h-full justify-between">
-                            <div>
-                                <h2 className="text-base font-bold text-gray-900 mb-4 flex items-center space-x-2">
-                                    <Briefcase className="h-5 w-5 text-gray-600" />
-                                    <span>Step 2: Enter Job Description</span>
-                                </h2>
+      setIsAnalyzing(false);
 
-                                <div className="flex justify-between items-center mb-3">
-                                    <label htmlFor="jd" className="text-sm font-bold text-gray-700">
-                                        Target Job Description
-                                    </label>
-                                    {jdText && (
-                                        <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
-                                            {jdText.split(/\s+/).filter(Boolean).length} words
-                                        </span>
-                                    )}
-                                </div>
+    }
 
-                                <textarea
-                                    id="jd"
-                                    rows={20}
-                                    value={jdText}
-                                    onChange={(e) => setJdText(e.target.value)}
-                                    placeholder="Paste the target job description here..."
-                                    className="w-full text-sm border border-gray-200 rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-gray-50/50 min-h-[380px]"
-                                    style={{ resize: 'vertical' }}
-                                />
-                            </div>
+  };
 
-                            <div className="mt-6 pt-4 border-t border-gray-100">
-                                <button
-                                    type="submit"
-                                    disabled={isAnalyzing || !resumeText || !jdText}
-                                    className={`w-full flex items-center justify-center space-x-2 py-4 px-6 rounded-xl text-white font-bold shadow-sm transition-all ${isAnalyzing || !resumeText || !jdText
-                                        ? "bg-gray-300 cursor-not-allowed text-gray-500"
-                                        : "bg-black hover:bg-gray-900 active:scale-[0.98] cursor-pointer"
-                                        }`}
-                                >
-                                    {isAnalyzing ? (
-                                        <>
-                                            <Loader2 className="h-5 w-5 animate-spin text-white" />
-                                            <span>Running ATS Compatibility Analysis...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Sparkles className="h-5 w-5 text-white" />
-                                            <span>Analyze Compatibility</span>
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-
-            </main>
+  return (
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-50 bg-paper-cream/85 backdrop-blur-md border-b border-paper-rule">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center space-x-3">
+            <div className="bg-paper-ink text-white px-2 py-1 paper-mono text-xs tracking-[0.18em]">
+              MIQ
+            </div>
+            <span className="paper-display font-extrabold text-lg text-paper-ink tracking-tight">
+              MatchIQ
+            </span>
+          </Link>
+          <Link href="/dashboard" className="paper-btn paper-btn-ghost">
+            <ArrowLeft className="h-4 w-4" /> Back to ATS Report
+          </Link>
         </div>
-    );
+      </header>
+
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+        <div className="pb-6 border-b border-paper-rule border-dashed">
+          <div className="flex items-end justify-between flex-wrap gap-3">
+            <div>
+              <span className="paper-label">New entry · form 03</span>
+              <h1 className="paper-display text-4xl sm:text-5xl font-bold mt-2 text-paper-ink leading-none">
+                File a Scan
+              </h1>
+              <p className="text-sm text-paper-muted mt-2 max-w-xl">
+                Submit a resume and target job description. We&apos;ll print back an
+                ATS compatibility report, line by line.
+              </p>
+            </div>
+            <span className="paper-stamp text-paper-secondary">
+              draft · pending
+            </span>
+          </div>
+        </div>
+
+        {error && (
+          <div className="p-4 border border-paper-danger bg-paper-cream-soft text-paper-danger flex items-start gap-3 text-sm rounded-sm animate-fadeIn">
+            <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+            <div>
+              <span className="paper-mono uppercase tracking-wider text-xs">Error · </span>
+              {error}
+            </div>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Step 1 — Upload */}
+          <section className="paper-sheet p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="paper-display font-bold text-base text-paper-ink flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                Step 01 · Upload Resume
+              </h2>
+              <span className="paper-label">pdf / docx</span>
+            </div>
+
+            <label className="group relative flex flex-col items-center justify-center border border-dashed border-paper-rule p-10 text-center cursor-pointer hover:border-paper-ink transition-colors bg-paper-cream-soft rounded-sm">
+              <input type="file" accept=".pdf,.docx,.doc" onChange={handleFile} className="sr-only" />
+              {isExtracting ? (
+                <div className="flex flex-col items-center gap-3 py-4">
+                  <Loader2 className="h-7 w-7 animate-spin text-paper-ink" />
+                  <p className="paper-mono uppercase tracking-wider text-xs text-paper-ink">
+                    Extracting…
+                  </p>
+                  <p className="text-xs text-paper-muted">Parsing document with MatchIQ</p>
+                </div>
+              ) : file ? (
+                <div className="flex flex-col items-center gap-3 py-2">
+                  <div className="p-3 border border-paper-hairline bg-white text-paper-ink rounded-sm">
+                    <FileText className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="paper-display font-semibold text-sm text-paper-ink max-w-xs truncate">
+                      {file.name}
+                    </p>
+                    <p className="paper-mono text-[11px] text-paper-muted mt-0.5">
+                      {(file.size / 1024).toFixed(1)} KB
+                    </p>
+                  </div>
+                  <div className="paper-chip text-paper-success border-paper-success/30">
+                    <CheckCircle2 className="h-3 w-3" /> stamped · ok
+                  </div>
+                  <span className="paper-label group-hover:text-paper-ink transition-colors">
+                    click to replace
+                  </span>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-3 py-4">
+                  <div className="p-3 border border-paper-hairline bg-white text-paper-ink rounded-sm">
+                    <Upload className="h-6 w-6" />
+                  </div>
+                  <p className="paper-display font-semibold text-sm text-paper-ink">
+                    Drop your resume here
+                  </p>
+                  <p className="text-xs text-paper-muted">
+                    or click to browse — PDF / DOCX, up to 10MB
+                  </p>
+                </div>
+              )}
+            </label>
+
+            <div className="mt-6">
+              <label htmlFor="resume" className="paper-label block mb-2">Extracted resume text</label>
+              <textarea
+                id="resume"
+                rows={10}
+                value={resumeText}
+                onChange={(e) => setResumeText(e.target.value)}
+                placeholder="Resume contents will appear here after extraction…"
+                className="w-full text-sm min-h-[220px]"
+                style={{ resize: "vertical" }}
+              />
+            </div>
+          </section>
+
+          {/* Step 2 — JD */}
+          <section className="paper-sheet p-6 flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="paper-display font-bold text-base text-paper-ink flex items-center gap-2">
+                <Briefcase className="h-4 w-4" />
+                Step 02 · Target Job Description
+              </h2>
+              {jdText && (
+                <span className="paper-label">
+                  {jdText.split(/\s+/).filter(Boolean).length} words
+                </span>
+              )}
+            </div>
+
+            <textarea
+              id="jd"
+              rows={20}
+              value={jdText}
+              onChange={(e) => setJdText(e.target.value)}
+              placeholder="Paste the job description here, verbatim. Bullet points, requirements, the lot."
+              className="w-full text-sm flex-1 min-h-[380px]"
+              style={{ resize: "vertical" }}
+            />
+
+            <div className="mt-6 pt-5 border-t border-dashed border-paper-rule">
+              <button
+                type="submit"
+                disabled={isAnalyzing || !resumeText || !jdText}
+                className="paper-btn paper-btn-primary w-full py-3"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Running compatibility analysis…
+                  </>
+                ) : (
+                  <>
+                    Analyze
+                  </>
+                )}
+              </button>
+              <p className="paper-label text-center mt-3">
+                results print to your ATS Report
+              </p>
+            </div>
+          </section>
+        </form>
+      </main>
+    </div>
+  );
 }

@@ -89,7 +89,6 @@ export async function POST(req: Request) {
             jdText,
             status: "pending"
         })
-        console.log(newScan._id)
 
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash-lite",
@@ -111,29 +110,30 @@ ${jdText}
             throw new Error("Gemini returned empty response");
         }
 
-        console.log('raw result-------->', response.text)
-
         const result = JSON.parse(response.text)
-        console.log('------->', result)
 
         const validated: AnalysisResult = analysisSchema.parse(result);
+
+        console.log('scan Id:', newScan._id)
 
         await Scan.findByIdAndUpdate(
             newScan._id,
             {
                 status: "completed",
                 matchScore: validated.matchScore,
-                analysis: validated,
-                scanId: newScan._id
+                analysis: validated
             }
         );
 
         return Response.json({
             success: true,
-            data: validated
+            data: validated,
+            scanId: newScan._id
         })
 
     } catch (error) {
+
+        console.log(error)
 
         await Scan.findByIdAndUpdate(
             newScan._id,

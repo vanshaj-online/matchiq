@@ -38,9 +38,8 @@ export async function POST(req: Request) {
         });
     });
 
-    const cleanedText = text
-        .replace(/\s+/g, " ")
-        .trim();
+    const cleanedText = text.replace(/\s+/g, " ").trim();
+
 
     return Response.json({
         success: true,

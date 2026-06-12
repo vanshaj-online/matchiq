@@ -1,56 +1,275 @@
 @import "tailwindcss";
 
-@theme {
-  /* Colors */
-  --color-primary: #000000;
-  --color-on-primary: #ffffff;
-  --color-ink: #000000;
-  --color-body: #5e5e5e;
-  --color-mute: #afafaf;
-  --color-hairline-mid: #4b4b4b;
-  --color-canvas: #ffffff;
-  --color-canvas-soft: #efefef;
-  --color-canvas-softer: #f3f3f3;
-  --color-surface-pressed: #e2e2e2;
-  --color-link: #0000ee;
-  --color-on-dark: #ffffff;
-  --color-black-elevated: #282828;
+/* =========================================================
+   PAPER DESIGN SYSTEM
+   Paper-textured, print-inspired. Minimal palette, clean
+   typography (Montserrat / Roboto / PT Mono), tactile
+   surface qualities and crisp hairline borders.
+   ========================================================= */
 
-  /* Border Radius */
+@theme {
+  /* --- Paper palette (Design.md tokens) --- */
+  --color-paper-ink: #111111;          /* primary */
+  --color-paper-text: #111827;         /* text */
+  --color-paper-muted: #6b7280;        /* derived */
+  --color-paper-subtle: #9ca3af;       /* derived */
+  --color-paper-hairline: #e5e7eb;     /* derived */
+  --color-paper-rule: #d4d0c4;         /* aged rule */
+  --color-paper-surface: #ffffff;      /* surface */
+  --color-paper-cream: #f4efe6;        /* page background */
+  --color-paper-cream-soft: #faf6ed;
+  --color-paper-secondary: #8b5cf6;
+  --color-paper-success: #16a34a;
+  --color-paper-warning: #d97706;
+  --color-paper-danger: #dc2626;
+
+  /* Existing brand tokens kept as paper-mapped aliases so existing
+     class names (bg-canvas, text-ink, etc.) keep working but read
+     in the Paper aesthetic. */
+  --color-primary: #111111;
+  --color-on-primary: #ffffff;
+  --color-ink: #111111;
+  --color-body: #4b5563;
+  --color-mute: #9ca3af;
+  --color-hairline-mid: #d4d0c4;
+  --color-canvas: #f4efe6;
+  --color-canvas-soft: #ece6d8;
+  --color-canvas-softer: #f4efe6;
+  --color-surface-pressed: #e7e1d2;
+  --color-link: #111111;
+  --color-on-dark: #ffffff;
+  --color-black-elevated: #1a1a1a;
+
+  /* Radius — Paper spec keeps things tight (4 / 8). */
   --radius-none: 0px;
+  --radius-sm: 4px;
   --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  --radius-lg: 8px;
+  --radius-xl: 8px;
+  --radius-2xl: 8px;
+  --radius-3xl: 12px;
   --radius-pill: 999px;
   --radius-pill-tab: 36px;
   --radius-full: 9999px;
 
-  /* Typography (Falling back to Inter/System fonts to mimic UberMove) */
-  --font-display: 'Inter', system-ui, 'Helvetica Neue', Arial, sans-serif;
-  --font-body: 'Inter', system-ui, 'Helvetica Neue', Arial, sans-serif;
-  --font-times: 'Times New Roman', serif;
+  /* Typography */
+  --font-display: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Roboto", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "PT Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-times: "PT Mono", ui-monospace, Menlo, monospace;
+
+  /* Spacing scale (4/8/12/16/24/32) is already covered by Tailwind */
+}
+
+/* =========================================================
+   Paper background — subtle fibers + faint horizontal rule
+   pattern that evokes printed-on-paper.
+   ========================================================= */
+:root {
+  --paper-fiber:
+    radial-gradient(rgba(60, 45, 20, 0.05) 1px, transparent 1.2px),
+    radial-gradient(rgba(60, 45, 20, 0.035) 1px, transparent 1.2px);
+  --paper-fiber-size: 3px 3px, 7px 7px;
+  --paper-fiber-position: 0 0, 1px 2px;
+  --paper-grain:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.012) 0px,
+      rgba(0, 0, 0, 0.012) 1px,
+      transparent 1px,
+      transparent 3px
+    );
 }
 
 @layer base {
+  html {
+    background-color: var(--color-paper-cream);
+  }
+
   body {
-    /* Utilizing our new theme variables out of the box */
-    @apply bg-canvas text-ink font-body antialiased;
+    background-color: var(--color-paper-cream);
+    background-image: var(--paper-fiber), var(--paper-grain);
+    background-size: var(--paper-fiber-size), auto;
+    background-position: var(--paper-fiber-position), 0 0;
+    color: var(--color-paper-text);
+    font-family: var(--font-body);
+    font-weight: 400;
+    letter-spacing: 0.005em;
+    -webkit-font-smoothing: antialiased;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-display tracking-normal;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    color: var(--color-paper-ink);
+    letter-spacing: -0.01em;
+  }
+
+  /* Crisp hairline rules across the system */
+  hr {
+    border: 0;
+    border-top: 1px solid var(--color-paper-rule);
+  }
+
+  /* Selection feels like a highlighter pass */
+  ::selection {
+    background-color: rgba(139, 92, 246, 0.25);
+    color: var(--color-paper-ink);
   }
 }
 
-input {
-  @apply border border-gray-300 rounded-md px-3 bg-white py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+/* =========================================================
+   Form controls — flat, sharp, printed-form aesthetic
+   ========================================================= */
+input,
+textarea,
+select {
+  font-family: var(--font-body);
+  background-color: var(--color-paper-surface);
+  border: 1px solid var(--color-paper-hairline);
+  border-radius: 4px;
+  padding: 0.55rem 0.75rem;
+  color: var(--color-paper-text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-paper-ink);
+  box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.08);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-paper-subtle);
+}
+
+/* =========================================================
+   Paper components — reusable, semantic utility classes
+   ========================================================= */
+.paper-card {
+  background-color: var(--color-paper-surface);
+  border: 1px solid var(--color-paper-hairline);
+  border-radius: 8px;
+  box-shadow:
+    0 1px 0 rgba(17, 17, 17, 0.04),
+    0 8px 24px -16px rgba(17, 17, 17, 0.12);
+  position: relative;
+}
+
+.paper-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: var(--paper-grain);
+  opacity: 0.6;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+}
+
+.paper-sheet {
+  background-color: var(--color-paper-surface);
+  border: 1px solid var(--color-paper-hairline);
+  border-radius: 8px;
+  position: relative;
+  box-shadow:
+    0 1px 0 rgba(17, 17, 17, 0.05),
+    1px 1px 0 rgba(17, 17, 17, 0.03),
+    2px 2px 0 rgba(17, 17, 17, 0.02);
+}
+
+.paper-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+  padding: 0.65rem 1rem;
+  border-radius: 4px;
+  border: 1px solid var(--color-paper-ink);
+  background: var(--color-paper-surface);
+  color: var(--color-paper-ink);
+  transition: transform 0.05s ease, background-color 0.15s ease, color 0.15s ease;
+  cursor: pointer;
+}
+
+.paper-btn:hover { background-color: var(--color-paper-cream-soft); }
+.paper-btn:active { transform: translateY(1px); }
+.paper-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--color-paper-cream-soft);
+}
+
+.paper-btn-primary {
+  background: var(--color-paper-ink);
+  color: #ffffff;
+  border-color: var(--color-paper-ink);
+  box-shadow: 2px 2px 0 var(--color-paper-rule);
+}
+.paper-btn-primary:hover { background: #000; }
+.paper-btn-primary:disabled {
+  background: #d4d0c4;
+  color: #6b7280;
+  border-color: #d4d0c4;
+  box-shadow: none;
+}
+
+.paper-btn-ghost {
+  border-color: transparent;
+  background: transparent;
+}
+.paper-btn-ghost:hover { background: rgba(17, 17, 17, 0.05); }
+
+.paper-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-paper-muted);
+}
+
+.paper-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--color-paper-hairline);
+  border-radius: 999px;
+  background: var(--color-paper-cream-soft);
+  color: var(--color-paper-text);
+}
+
+.paper-stamp {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border: 1.5px solid currentColor;
+  border-radius: 4px;
+  transform: rotate(-2deg);
+  display: inline-block;
+}
+
+.paper-divider {
+  border-top: 1px dashed var(--color-paper-rule);
+}
+
+.paper-mono { font-family: var(--font-mono); }
+.paper-display { font-family: var(--font-display); }
+.paper-body { font-family: var(--font-body); }
+
+/* Resume preview keeps a clean serif feel */
 #resume * {
   font-family: var(--font-times);
 }
@@ -59,3 +278,10 @@ input {
   font-size: 16px;
   letter-spacing: 0;
 }
+
+/* Reusable fade-in already referenced by pages */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn { animation: fadeIn 0.35s ease both; }
