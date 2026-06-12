@@ -25,10 +25,6 @@ const scanSchema = new Schema({
         default: "pending",
         required: true
     },
-    scanId: {
-        type: String,
-        required: true,
-    },
     analysis: {
         type: Schema.Types.Mixed
     }
