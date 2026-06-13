@@ -43,7 +43,6 @@ export async function POST(req: Request) {
 
     }
     catch (error) {
-        console.log(error)
         return Response.json({
             success: false,
             message: "Internal server error",

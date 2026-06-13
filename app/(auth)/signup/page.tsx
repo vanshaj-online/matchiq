@@ -38,23 +38,16 @@ export default function SignupPage() {
     <main className="min-h-screen flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <span className="paper-label">MatchIQ · enrollment</span>
-          <h1 className="paper-display text-3xl font-extrabold mt-2 text-[var(--color-paper-ink)]">
+          <span className="paper-label">MatchIQ</span>
+          <h1 className="paper-display text-3xl font-bold mt-2 text-paper-ink">
             Open a new ATS Report
           </h1>
-          <p className="text-sm text-[var(--color-paper-muted)] mt-1">
-            Three fields. One signature. You're in.
-          </p>
         </div>
 
         <div className="paper-sheet p-6">
-          <div className="flex items-center justify-between mb-5">
-            <span className="paper-label">Form · 02</span>
-            <span className="paper-label">new entry</span>
-          </div>
 
           {error && (
-            <div className="mb-4 px-3 py-2.5 border border-[var(--color-paper-danger)] bg-[#fdecec] text-[var(--color-paper-danger)] text-xs paper-mono rounded-sm">
+            <div className="mb-4 px-3 py-2.5 border border-paper-danger bg-paper-cream-soft text-paper-danger text-xs paper-mono rounded-sm">
               {error}
             </div>
           )}
@@ -67,7 +60,7 @@ export default function SignupPage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Ada Lovelace"
+                placeholder="John Doe"
                 required
                 className="w-full"
               />
@@ -93,7 +86,7 @@ export default function SignupPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="At least 8 characters"
+                placeholder="At least 6 characters"
                 required
                 minLength={8}
                 className="w-full"
@@ -110,9 +103,9 @@ export default function SignupPage() {
           </form>
         </div>
 
-        <p className="text-center text-xs text-[var(--color-paper-muted)] mt-5 paper-body">
-          Already enrolled?{" "}
-          <Link href="/login" className="text-[var(--color-paper-ink)] font-semibold underline underline-offset-4 decoration-dotted">
+        <p className="text-center text-xs text-paper-muted mt-5 paper-body">
+          Already Signed Up?{" "}
+          <Link href="/login" className="text-paper-ink font-semibold underline underline-offset-4 decoration-dotted">
             Sign in
           </Link>
         </p>

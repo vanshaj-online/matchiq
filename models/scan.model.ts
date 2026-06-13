@@ -25,8 +25,16 @@ const scanSchema = new Schema({
         default: "pending",
         required: true
     },
+    jobTitle: {
+        type: String,
+        required: false
+    },
     analysis: {
         type: Schema.Types.Mixed
+    },
+    name: {
+        type: String,
+        required: true
     }
 
 },

@@ -21,13 +21,10 @@ export const { signIn, signOut, handlers, auth } = NextAuth({
 
                 const user = await User.findOne({ email })
 
-                console.log('user found', !!user)
-
                 if (!user) return null
 
                 const passwordValid = await bcrypt.compare(password, user.passwordHash)
 
-                console.log('password valid', !!passwordValid)
                 if (!passwordValid) return null
 
 

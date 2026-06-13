@@ -18,7 +18,7 @@
   --color-paper-surface: #ffffff;      /* surface */
   --color-paper-cream: #f4efe6;        /* page background */
   --color-paper-cream-soft: #faf6ed;
-  --color-paper-secondary: #8b5cf6;
+  --color-paper-secondary: #c2410c;
   --color-paper-success: #16a34a;
   --color-paper-warning: #d97706;
   --color-paper-danger: #dc2626;
@@ -58,13 +58,8 @@
   --font-mono: "PT Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   --font-times: "PT Mono", ui-monospace, Menlo, monospace;
 
-  /* Spacing scale (4/8/12/16/24/32) is already covered by Tailwind */
 }
 
-/* =========================================================
-   Paper background — subtle fibers + faint horizontal rule
-   pattern that evokes printed-on-paper.
-   ========================================================= */
 :root {
   --paper-fiber:
     radial-gradient(rgba(60, 45, 20, 0.05) 1px, transparent 1.2px),
@@ -212,7 +207,7 @@ textarea::placeholder {
   border-color: var(--color-paper-ink);
   box-shadow: 2px 2px 0 var(--color-paper-rule);
 }
-.paper-btn-primary:hover { background: #000; }
+.paper-btn-primary:hover { background: #424242; }
 .paper-btn-primary:disabled {
   background: #d4d0c4;
   color: #6b7280;
@@ -285,3 +280,4 @@ textarea::placeholder {
   to   { opacity: 1; transform: translateY(0); }
 }
 .animate-fadeIn { animation: fadeIn 0.35s ease both; }
+

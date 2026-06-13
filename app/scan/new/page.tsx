@@ -46,8 +46,6 @@ export default function NewScanPage() {
 
       const data = await response.json();
 
-      console.log(data)
-
       setResumeText(data.text);
 
     } catch (err: any) {
@@ -107,7 +105,7 @@ export default function NewScanPage() {
             <div className="bg-paper-ink text-white px-2 py-1 paper-mono text-xs tracking-[0.18em]">
               MIQ
             </div>
-            <span className="paper-display font-extrabold text-lg text-paper-ink tracking-tight">
+            <span className="paper-display font-bold text-lg text-paper-ink tracking-tight">
               MatchIQ
             </span>
           </Link>

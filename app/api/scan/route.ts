@@ -47,7 +47,10 @@ OUTPUT SCHEMA (return exactly this shape):
     }
   ],
   "topStrengths": [<string>, <string>, <string>],
-  "quickWins": [<string>, <string>, <string>]
+  "quickWins": [<string>, <string>, <string>],
+  "jobTitle": <string>,
+  "name": <string>,
+  
 }
 
 FIELD DEFINITIONS:
@@ -114,8 +117,6 @@ ${jdText}
 
         const validated: AnalysisResult = analysisSchema.parse(result);
 
-        console.log('scan Id:', newScan._id)
-
         await Scan.findByIdAndUpdate(
             newScan._id,
             {
@@ -132,8 +133,6 @@ ${jdText}
         })
 
     } catch (error) {
-
-        console.log(error)
 
         await Scan.findByIdAndUpdate(
             newScan._id,

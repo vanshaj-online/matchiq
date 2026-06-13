@@ -25,7 +25,6 @@ export default async function ScanResultPage({
     await connectDB();
     scan = await Scan.findById(id);
     if (scan) result = scan.analysis;
-    console.log(result)
   } catch (err: any) {
     error = err.message || "Failed to fetch scan data";
   }
@@ -65,7 +64,7 @@ export default async function ScanResultPage({
             <div className="bg-paper-ink text-white px-2 py-1 paper-mono text-xs tracking-[0.18em]">
               MIQ
             </div>
-            <span className="paper-display font-extrabold text-lg text-paper-ink tracking-tight">
+            <span className="paper-display font-bold text-lg text-paper-ink tracking-tight">
               MatchIQ
             </span>
           </Link>

@@ -47,6 +47,8 @@ export const analysisSchema = z.object({
   topStrengths: z.array(z.string()),
 
   quickWins: z.array(z.string()),
+  jobTitle: z.string(),
+  name: z.string()
 });
 
 export type AnalysisResult = z.infer<

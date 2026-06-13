@@ -29,23 +29,16 @@ export default function LoginPage() {
     <main className="min-h-screen flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <span className="paper-label">MatchIQ · access</span>
-          <h1 className="paper-display text-3xl font-extrabold mt-2 text-[var(--color-paper-ink)]">
+          <span className="paper-label">MatchIQ</span>
+          <h1 className="paper-display text-3xl font-bold mt-2 text-paper-ink">
             Welcome back
           </h1>
-          <p className="text-sm text-[var(--color-paper-muted)] mt-1">
-            Sign in to read your ATS Report.
-          </p>
         </div>
 
         <div className="paper-sheet p-6">
-          <div className="flex items-center justify-between mb-5">
-            <span className="paper-label">Form · 01</span>
-            <span className="paper-label">page 1 / 1</span>
-          </div>
 
           {error && (
-            <div className="mb-4 px-3 py-2.5 border border-[var(--color-paper-danger)] bg-[#fdecec] text-[var(--color-paper-danger)] text-xs paper-mono rounded-sm">
+            <div className="mb-4 px-3 py-2.5 border border-paper-danger bg-paper-cream-soft text-paper-danger text-xs paper-mono rounded-sm">
               {error}
             </div>
           )}
@@ -87,9 +80,9 @@ export default function LoginPage() {
           </form>
         </div>
 
-        <p className="text-center text-xs text-[var(--color-paper-muted)] mt-5 paper-body">
+        <p className="text-center text-xs text-paper-muted mt-5 paper-body">
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-[var(--color-paper-ink)] font-semibold underline underline-offset-4 decoration-dotted">
+          <Link href="/signup" className="text-paper-ink font-semibold underline underline-offset-4 decoration-dotted">
             Sign up
           </Link>
         </p>
