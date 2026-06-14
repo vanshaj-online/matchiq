@@ -134,6 +134,7 @@ ${jdText}
 
     } catch (error) {
 
+        console.log(error)
         await Scan.findByIdAndUpdate(
             newScan._id,
             {

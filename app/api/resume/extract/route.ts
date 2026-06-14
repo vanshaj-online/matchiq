@@ -1,4 +1,5 @@
 import { PdfReader } from "pdfreader";
+import mammoth from "mammoth";
 
 export async function POST(req: Request) {
     const formData = await req.formData()
@@ -20,23 +21,36 @@ export async function POST(req: Request) {
 
     let text = ''
 
-    await new Promise<void>((resolve, reject) => {
-        new PdfReader().parseBuffer(buffer, (err, item) => {
-            if (err) {
-                reject(err);
-                return;
-            }
+    if (file.name.endsWith('.pdf')) {
+        console.log('--------------------- running pdf block ------------------------')
+        await new Promise<void>((resolve, reject) => {
+            new PdfReader().parseBuffer(buffer, (err, item) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
 
-            if (!item) {
-                resolve();
-                return;
-            }
+                if (!item) {
+                    resolve();
+                    return;
+                }
 
-            if (item.text) {
-                text += item.text + " ";
-            }
+                if (item.text) {
+                    text += item.text + " ";
+                }
+            });
         });
-    });
+
+    } else if (file.name.endsWith('.docx')) {
+        console.log('--------------------- running docx block ------------------------')
+
+        const result = await mammoth.extractRawText({
+            buffer,
+        });
+
+        text = result.value;
+    }
+
 
     const cleanedText = text.replace(/\s+/g, " ").trim();
 

@@ -55,11 +55,10 @@ export default async function DashboardPage() {
         <div className="pb-6 border-b border-(--color-paper-rule) border-dashed">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <span className="paper-label">ALL RESUMES</span>
               <h1 className="paper-display text-4xl sm:text-5xl font-bold mt-2 leading-none text-(--color-paper-ink)">
-                ATS Report
+                Analysis History
               </h1>
-              <p className="text-sm text-paper-muted mt-2">
+              <p className="text-sm text-paper-muted mt-4">
                 Welcome back, <span className="text-(--color-paper-ink) font-medium capitalize">{userName}</span>.
               </p>
             </div>
@@ -73,9 +72,8 @@ export default async function DashboardPage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between px-1">
               <span className="paper-label">
-                {scans.length} {scans.length === 1 ? "entry" : "entries"} on record
+                Total {scans.length === 1 ? "scan:" : "scans:"} {scans.length}
               </span>
-              <span className="paper-label">vol. 01</span>
             </div>
 
             <ul className="paper-sheet divide-y divide-paper-hairline">

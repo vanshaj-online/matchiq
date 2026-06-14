@@ -76,6 +76,10 @@
     );
 }
 
+.mono{
+  font-family: var(--font-mono);
+}
+
 @layer base {
   html {
     background-color: var(--color-paper-cream);

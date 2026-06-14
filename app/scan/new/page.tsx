@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   FileText,
   Briefcase,
-  CheckCircle2,
+  X,
   AlertCircle,
   Loader2,
   ArrowLeft,
@@ -58,6 +58,12 @@ export default function NewScanPage() {
 
     }
 
+  };
+
+  const handleFileClear = async () => {
+    setFile(null);
+    setResumeText("");
+    setIsExtracting(false);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -119,7 +125,6 @@ export default function NewScanPage() {
         <div className="pb-6 border-b border-paper-rule border-dashed">
           <div className="flex items-end justify-between flex-wrap gap-3">
             <div>
-              <span className="paper-label">New entry · form 03</span>
               <h1 className="paper-display text-4xl sm:text-5xl font-bold mt-2 text-paper-ink leading-none">
                 File a Scan
               </h1>
@@ -135,12 +140,20 @@ export default function NewScanPage() {
         </div>
 
         {error && (
-          <div className="p-4 border border-paper-danger bg-paper-cream-soft text-paper-danger flex items-start gap-3 text-sm rounded-sm animate-fadeIn">
-            <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
-            <div>
-              <span className="paper-mono uppercase tracking-wider text-xs">Error · </span>
-              {error}
+          <div className="px-2 py-2 border border-paper-danger/70 bg-paper-cream-soft text-paper-danger flex items-center justify-between text-sm rounded-sm animate-fadeIn">
+            <div className="flex gap-3 items-center">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <div className="">
+                <span className="paper-mono uppercase tracking-wider text-xs"
+                >Error · </span>
+                {error}
+              </div>
             </div>
+            <button
+              onClick={() => setError(null)}
+              className="hover:bg-paper-danger/70 hover:text-white transition-colors text-xs cursor-pointer p-0.5 rounded-sm border">
+              <X className="h-4 w-4" />
+            </button>
           </div>
         )}
 
@@ -156,7 +169,7 @@ export default function NewScanPage() {
             </div>
 
             <label className="group relative flex flex-col items-center justify-center border border-dashed border-paper-rule p-10 text-center cursor-pointer hover:border-paper-ink transition-colors bg-paper-cream-soft rounded-sm">
-              <input type="file" accept=".pdf,.docx,.doc" onChange={handleFile} className="sr-only" />
+              <input type="file" accept=".pdf,.docx" onChange={handleFile} className="sr-only" />
               {isExtracting ? (
                 <div className="flex flex-col items-center gap-3 py-4">
                   <Loader2 className="h-7 w-7 animate-spin text-paper-ink" />
@@ -166,8 +179,8 @@ export default function NewScanPage() {
                   <p className="text-xs text-paper-muted">Parsing document with MatchIQ</p>
                 </div>
               ) : file ? (
-                <div className="flex flex-col items-center gap-3 py-2">
-                  <div className="p-3 border border-paper-hairline bg-white text-paper-ink rounded-sm">
+                <div className="flex flex-col items-center gap-6 py-2">
+                  <div className="text-paper-ink">
                     <FileText className="h-6 w-6" />
                   </div>
                   <div>
@@ -178,27 +191,33 @@ export default function NewScanPage() {
                       {(file.size / 1024).toFixed(1)} KB
                     </p>
                   </div>
-                  <div className="paper-chip text-paper-success border-paper-success/30">
-                    <CheckCircle2 className="h-3 w-3" /> stamped · ok
-                  </div>
-                  <span className="paper-label group-hover:text-paper-ink transition-colors">
-                    click to replace
-                  </span>
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-3 py-4">
-                  <div className="p-3 border border-paper-hairline bg-white text-paper-ink rounded-sm">
+                  <div className="p-3  text-paper-ink rounded-sm">
                     <Upload className="h-6 w-6" />
                   </div>
                   <p className="paper-display font-semibold text-sm text-paper-ink">
                     Drop your resume here
                   </p>
                   <p className="text-xs text-paper-muted">
-                    or click to browse — PDF / DOCX, up to 10MB
+                    or click to browse — only PDF / DOCX, up to 10MB
                   </p>
                 </div>
               )}
             </label>
+
+            {
+              file &&
+              <div className="flex gap-4 mx-auto w-max mt-4 ">
+
+                <button
+                  onClick={handleFileClear}
+                  className="mono hover:bg-paper-danger/70 hover:text-white transition-colors text-xs border px-2 py-1 rounded-sm cursor-pointer text-paper-danger/70 "
+                >Remove file</button>
+
+              </div>
+            }
 
             <div className="mt-6">
               <label htmlFor="resume" className="paper-label block mb-2">Extracted resume text</label>

@@ -54,6 +54,5 @@ export const { signIn, signOut, handlers, auth } = NextAuth({
             return session;
         }
 
-    },
-
+    }
 })

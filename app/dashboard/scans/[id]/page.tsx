@@ -5,10 +5,18 @@ import {
   AlertCircle,
   HelpCircle,
   ArrowLeft,
+  ChevronDown,
 } from "lucide-react";
 import type { AnalysisResult } from "@/lib/validators/analysis";
 import { tone } from "@/lib/colorTone";
+  
+const summaryBase =
+  "flex items-center justify-between gap-3 cursor-pointer select-none list-none " +
+  "[&::-webkit-details-marker]:hidden [&::marker]:hidden " +
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-paper-ink/30 rounded-sm";
 
+const chevron =
+  "h-3.5 w-3.5 text-paper-subtle shrink-0 transition-transform duration-200 group-open:rotate-180";
 
 export default async function ScanResultPage({
   params,
@@ -56,6 +64,42 @@ export default async function ScanResultPage({
     ? circumference - (result.matchScore / 100) * circumference
     : 0;
 
+  // --- Missing keywords: group by severity so the most actionable items
+  // (critical) lead, and bury the per-item explanation behind a toggle so
+  // the section reads as a scan-able list instead of six stacked paragraphs.
+  const badgeClass = (importance: string) =>
+    importance === "critical"
+      ? "border-[color:var(--color-paper-danger)] text-[color:var(--color-paper-danger)]"
+      : importance === "important"
+        ? "border-[color:var(--color-paper-warning)] text-[color:var(--color-paper-warning)]"
+        : "border-[color:var(--color-paper-secondary)] text-[color:var(--color-paper-secondary)]";
+
+  const keywordGroups = result
+    ? [
+        {
+          label: "critical",
+          items: result.missingKeywords.filter((k) => k.importance === "critical"),
+        },
+        {
+          label: "important",
+          items: result.missingKeywords.filter((k) => k.importance === "important"),
+        },
+        {
+          label: "nice to have",
+          items: result.missingKeywords.filter(
+            (k) => k.importance !== "critical" && k.importance !== "important"
+          ),
+        },
+      ].filter((group) => group.items.length > 0)
+    : [];
+
+  const criticalCount = result
+    ? result.missingKeywords.filter((k) => k.importance === "critical").length
+    : 0;
+  const importantCount = result
+    ? result.missingKeywords.filter((k) => k.importance === "important").length
+    : 0;
+
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-50 bg-paper-cream/85 backdrop-blur-md border-b border-paper-rule">
@@ -93,9 +137,6 @@ export default async function ScanResultPage({
             <section className="paper-sheet p-8 sm:p-10 relative overflow-hidden">
               <div className="absolute top-4 left-6 paper-label">
                 Report
-              </div>
-              <div className="absolute top-4 right-6 paper-label">
-                ATS · compatibility
               </div>
 
               <div className="mt-8 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-8">
@@ -154,7 +195,7 @@ export default async function ScanResultPage({
             {/* Sub-metrics */}
             <section>
               <div className="flex items-center justify-between mb-4 flex-wrap">
-                <span className="paper-label whitespace-nowrap">section i · sub-scores</span>
+                <span className="paper-label whitespace-nowrap">sub-scores</span>
                 <span className="paper-label whitespace-nowrap">four metrics</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -214,7 +255,7 @@ export default async function ScanResultPage({
               <div className="lg:col-span-5 space-y-6">
                 <div className="paper-sheet p-6">
                   <div className="flex items-center gap-2 mb-4">
-                    <span className="paper-label">section ii · strengths</span>
+                    <span className="paper-label">strengths</span>
                   </div>
                   <ul className="space-y-3">
                     {result.topStrengths.map((str, i) => (
@@ -233,7 +274,7 @@ export default async function ScanResultPage({
 
                 <div className="paper-sheet p-6">
                   <div className="flex items-center gap-2 mb-4">
-                    <span className="paper-label">section iii · quick wins</span>
+                    <span className="paper-label">quick wins</span>
                   </div>
                   <ul className="space-y-3">
                     {result.quickWins.map((win, i) => (
@@ -251,44 +292,66 @@ export default async function ScanResultPage({
                 </div>
               </div>
 
+              {/* Missing keywords — grouped by severity, reasons collapsed */}
               <div className="lg:col-span-7 paper-sheet p-6">
-                <div className="flex items-center justify-between mb-2 flex-wrap">
+                <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
                   <div className="flex items-center gap-2">
-                    <span className="paper-label whitespace-nowrap">section iv · missing keywords</span>
+                    <span className="paper-label whitespace-nowrap">missing keywords</span>
                   </div>
                   <span className="paper-label whitespace-nowrap">{result.missingKeywords.length} items</span>
                 </div>
-                <p className="text-xs text-paper-muted mb-5 leading-relaxed">
+                <p className="text-xs text-paper-muted mb-1 leading-relaxed">
                   Keywords from the job description that did not appear on your
-                  resume. Incorporate naturally to improve ATS match.
+                  resume.
                 </p>
+                {(criticalCount > 0 || importantCount > 0) && (
+                  <p className="paper-mono text-[11px] tracking-[0.08em] mb-4">
+                    {criticalCount > 0 && (
+                      <span className="text-paper-danger">
+                        {criticalCount} critical
+                      </span>
+                    )}
+                    {criticalCount > 0 && importantCount > 0 && (
+                      <span className="text-paper-subtle"> · </span>
+                    )}
+                    {importantCount > 0 && (
+                      <span className="text-paper-warning">
+                        {importantCount} important
+                      </span>
+                    )}
+                  </p>
+                )}
 
-                <div className="divide-y divide-dashed divide-paper-rule">
-                  {result.missingKeywords.map((kw, i) => {
-                    const badge =
-                      kw.importance === "critical"
-                        ? "border-[color:var(--color-paper-danger)] text-[color:var(--color-paper-danger)]"
-                        : kw.importance === "important"
-                          ? "border-[color:var(--color-paper-warning)] text-[color:var(--color-paper-warning)]"
-                          : "border-[color:var(--color-paper-secondary)] text-[color:var(--color-paper-secondary)]";
-                    return (
-                      <div key={i} className="py-7 last:pb-0 first:border-t first:border-paper-hairline">
-                        <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
-                          <span className="paper-mono text-[13px] text-paper-ink bg-paper-cream-soft px-2 py-0.5 border border-paper-hairline rounded-sm">
-                            {kw.keyword}
-                          </span>
-                          <span
-                            className={`paper-mono text-[10px] tracking-[0.14em] uppercase px-2 py-0.5 border rounded-sm ${badge}`}
-                          >
-                            {kw.importance}
-                          </span>
-                        </div>
-                        <p className="text-xs text-paper-muted leading-relaxed">
-                          {kw.context}
-                        </p>
+                <div className="space-y-5">
+                  {keywordGroups.map((group) => (
+                    <div key={group.label}>
+                      <div className="paper-mono text-[10px] tracking-[0.18em] uppercase text-ink font-medium mb-1">
+                        {group.label} · {group.items.length}
                       </div>
-                    );
-                  })}
+                      <div className="divide-y divide-dashed divide-paper-rule border-t border-paper-ink ">
+                        {group.items.map((kw, i) => (
+                          <details key={`${group.label}-${i}`} className="group py-4">
+                            <summary className={summaryBase}>
+                              <span className="flex items-center gap-2 flex-wrap">
+                                <span className="paper-mono text-[13px] text-paper-ink bg-paper-cream-soft px-2 py-0.5 border border-paper-hairline rounded-sm">
+                                  {kw.keyword}
+                                </span>
+                                <span
+                                  className={`paper-mono text-[10px] tracking-[0.14em] uppercase px-2 py-0.5 border rounded-sm ${badgeClass(kw.importance)}`}
+                                >
+                                  {kw.importance}
+                                </span>
+                              </span>
+                              <ChevronDown className={chevron} />
+                            </summary>
+                            <p className="text-xs text-paper-muted leading-relaxed mt-2 pr-6">
+                              {kw.context}
+                            </p>
+                          </details>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
                   {result.missingKeywords.length === 0 && (
                     <div className="text-center py-8 paper-label">
                       No missing keywords — match is clean.
@@ -298,36 +361,48 @@ export default async function ScanResultPage({
               </div>
             </section>
 
-            {/* Section feedback */}
+            {/* Section feedback — title + 2-line preview, full text on expand */}
             <section className="paper-sheet p-6">
               <div className="flex items-center gap-2 mb-5">
-                <span className="paper-label">section v · review by part</span>
+                <span className="paper-label">review by part</span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
                 {[
                   { title: "Summary / Objective", text: result.sectionFeedback.summary },
                   { title: "Experience", text: result.sectionFeedback.experience },
                   { title: "Skills", text: result.sectionFeedback.skills },
                   { title: "Education", text: result.sectionFeedback.education },
                 ].map((item, idx) => (
-                  <div key={idx} className="border-l-2 border-paper-ink pl-4">
-                    <h4 className="paper-display font-bold text-sm text-paper-ink mb-1">
-                      {item.title}
-                    </h4>
-                    <p className="text-xs text-paper-muted leading-relaxed">
+                  <details
+                    key={idx}
+                    className="group border-l-2 border-paper-ink pl-4 py-3"
+                    {...(idx === 0 ? { open: true } : {})}
+                  >
+                    <summary className={`${summaryBase} items-start`}>
+                      <div className="flex-1">
+                        <h4 className="paper-display font-bold text-sm text-paper-ink mb-1">
+                          {item.title}
+                        </h4>
+                        <p className="text-xs text-paper-muted leading-relaxed line-clamp-2 group-open:hidden">
+                          {item.text}
+                        </p>
+                      </div>
+                      <ChevronDown className={`${chevron} mt-1`} />
+                    </summary>
+                    <p className="text-xs text-paper-muted leading-relaxed mt-1">
                       {item.text}
                     </p>
-                  </div>
+                  </details>
                 ))}
               </div>
             </section>
 
-            {/* Rewrites */}
+            {/* Rewrites — rewritten copy + reason lead, original tucked away */}
             <section className="paper-sheet p-6">
               <div className="flex items-center justify-between mb-2 flex-wrap">
                 <div className="flex items-center gap-2">
-                  <span className="paper-label whitespace-nowrap">section vi · rewrites</span>
+                  <span className="paper-label whitespace-nowrap">rewrites</span>
                 </div>
                 <span className="paper-label whitespace-nowrap">
                   {result.rewriteSuggestions.length} drafts
@@ -343,25 +418,15 @@ export default async function ScanResultPage({
                     key={i}
                     className="border border-paper-hairline rounded-sm overflow-hidden"
                   >
-                    <div className="grid grid-cols-1 lg:grid-cols-2">
-                      <div className="p-4 lg:border-r border-b lg:border-b-0 border-dashed border-paper-rule bg-paper-cream-soft">
-                        <span className="paper-label text-paper-danger">
-                          original · struck
-                        </span>
-                        <p className="text-xs text-paper-muted mt-2 line-through leading-relaxed italic font-serif">
-                          &ldquo;{sug.original}&rdquo;
-                        </p>
-                      </div>
-                      <div className="p-4">
-                        <span className="paper-label text-paper-success flex items-center gap-1">
-                          rewritten
-                        </span>
-                        <p className="text-sm text-paper-ink font-medium mt-2 leading-relaxed">
-                          &ldquo;{sug.rewritten}&rdquo;
-                        </p>
-                      </div>
+                    <div className="p-4">
+                      <span className="paper-label text-paper-success">
+                        rewritten
+                      </span>
+                      <p className="text-sm text-paper-ink font-medium mt-2 leading-relaxed">
+                        &ldquo;{sug.rewritten}&rdquo;
+                      </p>
                     </div>
-                    <div className="p-3 border-t border-dashed border-paper-rule flex items-start gap-2 text-xs bg-paper-cream">
+                    <div className="px-4 pb-4 flex items-start gap-2 text-xs">
                       <HelpCircle className="h-3.5 w-3.5 text-paper-muted shrink-0 mt-0.5" />
                       <p className="text-paper-muted leading-relaxed">
                         <span className="paper-mono uppercase tracking-wider text-[10px] text-paper-ink mr-1">
@@ -370,6 +435,19 @@ export default async function ScanResultPage({
                         {sug.reason}
                       </p>
                     </div>
+                    <details className="group border-t border-dashed border-paper-rule">
+                      <summary className={`${summaryBase} px-4 py-2 bg-paper-cream-soft`}>
+                        <span className="paper-label text-paper-danger">
+                          show original
+                        </span>
+                        <ChevronDown className={chevron} />
+                      </summary>
+                      <div className="px-4 pb-4 pt-1 bg-paper-cream-soft">
+                        <p className="text-xs text-paper-muted leading-relaxed italic font-serif">
+                          &ldquo;{sug.original}&rdquo;
+                        </p>
+                      </div>
+                    </details>
                   </article>
                 ))}
                 {result.rewriteSuggestions.length === 0 && (

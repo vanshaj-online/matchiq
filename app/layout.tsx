@@ -36,6 +36,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${montserrat.variable} ${roboto.variable} ${ptMono.variable} h-full antialiased`}
       style={{
         scrollBehavior: 'smooth'

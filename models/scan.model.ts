@@ -31,10 +31,6 @@ const scanSchema = new Schema({
     },
     analysis: {
         type: Schema.Types.Mixed
-    },
-    name: {
-        type: String,
-        required: true
     }
 
 },
