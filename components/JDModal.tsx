@@ -7,10 +7,7 @@ export default function JDModal({ text }: { text: string }) {
 
     return (
         <>
-            <button onClick={() => {
-                setShowJD(true)
-                console.log(showJD)
-            }} className="mono text-paper-muted hover:bg-neutral-200/70 absolute top-4 right-6 uppercase text-xs z-50 tracking-wider hover:text-paper-ink transition-colors py-1.5 px-2 rounded-sm cursor-pointer">View Job Description</button>
+            <button onClick={() => setShowJD(true)} className="mono text-paper-muted hover:bg-neutral-200/70 absolute top-4 right-6 uppercase text-xs tracking-wider hover:text-paper-ink transition-colors py-1.5 px-2 rounded-sm cursor-pointer print:hidden">View Job Description</button>
 
 
 

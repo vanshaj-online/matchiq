@@ -21,7 +21,6 @@ async function connectDB() {
 
     }
     catch (error) {
-        console.log('Error connecting to database', error)
         throw new Error("Failed to connect to database")
     }
 

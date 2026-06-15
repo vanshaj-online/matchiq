@@ -10,6 +10,7 @@ import {
 import type { AnalysisResult } from "@/lib/validators/analysis";
 import { tone } from "@/lib/colorTone";
 import JDModal from '@/components/JDModal';
+import ReportWrapper from '@/components/ReportWrapper';
 
 const summaryBase =
   "flex items-center justify-between gap-3 cursor-pointer select-none list-none " +
@@ -39,6 +40,8 @@ export default async function ScanResultPage({
   } catch (err: any) {
     error = "Failed to fetch scan data";
   }
+
+
 
   if (!scan && !error) {
     return (
@@ -105,36 +108,33 @@ export default async function ScanResultPage({
     <div className="min-h-screen relative">
       <header className="sticky top-0 z-50 bg-paper-cream/85 backdrop-blur-md border-b border-paper-rule">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-3">
-            <div className="bg-paper-ink text-white px-2 py-1 paper-mono text-xs tracking-[0.18em]">
-              MIQ
-            </div>
-            <span className="paper-display font-bold text-lg text-paper-ink tracking-tight">
-              MatchIQ
-            </span>
+          <Link href="/" className="text-paper-ink px-2 py-1 paper-stamp uppercase text-xs tracking-[0.18em]">
+            M·IQ
           </Link>
+
           <Link href="/dashboard" className="paper-btn paper-btn-ghost">
-            <ArrowLeft className="h-4 w-4" /> Dashboard
+            Dashboard
           </Link>
+
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
-        {error && (
-          <div className="p-4 border border-paper-danger bg-[#fdecec] text-paper-danger flex items-start gap-3 text-sm rounded-sm">
-            <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
-            <div>
-              <span className="paper-mono uppercase tracking-wider text-xs">
-                Error ·{" "}
-              </span>
-              {error}
+      <ReportWrapper>
+        <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10" id="report-to-download">
+          {error && (
+            <div className="p-4 border border-paper-danger bg-[#fdecec] text-paper-danger flex items-start gap-3 text-sm rounded-sm">
+              <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+              <div>
+                <span className="paper-mono uppercase tracking-wider text-xs">
+                  Error ·{" "}
+                </span>
+                {error}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {result && colors && (
-          <>
-            <div className="space-y-10">
+          {result && colors && (
+            <div className="space-y-10" >
               {/* Masthead verdict */}
               <section className="paper-sheet p-8 sm:p-10 relative overflow-hidden">
                 <JDModal text={scan.jdText} />
@@ -467,9 +467,9 @@ export default async function ScanResultPage({
                 — end of report —
               </div>
             </div>
-          </>
-        )}
-      </main>
+          )}
+        </main>
+      </ReportWrapper>
     </div>
   );
 }

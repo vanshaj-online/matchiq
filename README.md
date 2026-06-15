@@ -41,7 +41,7 @@ MatchIQ follows a **Paper-textured, print-inspired design** with tactile surface
 *   **Section-by-Section Review**: Direct critique of summary, work experience, skills, and academic history.
 *   **Actionable Rewrites**: Compares original resume bullet points with custom-tailored, job-aligned alternatives alongside explanation notes.
 *   **Strengths & Quick Wins**: Displays the top 3 strengths of the candidate and 3 immediate actionable enhancements.
-*   **Print Layout**: Native print-friendly stylesheet for saving reports directly to PDF or hard copies.
+*   **Print Layout & Automatic Accordion Expansion**: Native print-friendly stylesheet powered by `react-to-print` inside `ReportWrapper.tsx` that automatically expands all closed accordion panels (`<details>` elements) before printing, saving their original states, and restoring them to their original open/closed status after printing is complete or cancelled.
 
 ### 🛡️ 5. Usage Safeguards & Security
 *   **Rate Limits**: Implements a strict limit of 5 successful scans per user per day to keep API costs predictable.
@@ -57,6 +57,7 @@ MatchIQ follows a **Paper-textured, print-inspired design** with tactile surface
 *   **Language**: [TypeScript](https://www.typescriptlang.org/)
 *   **Styling**: [Tailwind CSS v4.0](https://tailwindcss.com/) with a custom design configuration (PostCSS + Vite compiler)
 *   **Forms & Validation**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
+*   **Printing & PDF Export**: [react-to-print](https://github.com/gregnb/react-to-print) for high-fidelity native print-sheet layout rendering and export.
 
 ### Backend, Database, & AI
 *   **Database**: [MongoDB](https://www.mongodb.com/) via [Mongoose](https://mongoosejs.com/)

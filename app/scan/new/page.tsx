@@ -82,7 +82,6 @@ export default function NewScanPage() {
       });
 
       if (!response.ok) {
-        console.log('try block error', response.status)
 
         if (response.status == 429) {
 
@@ -116,7 +115,6 @@ export default function NewScanPage() {
       else throw new Error(data.message || 'Analysis failed.');
 
     } catch (err: any) {
-      console.log('catch block error')
 
       setError(err.message || 'Failed to analyze resume.');
 

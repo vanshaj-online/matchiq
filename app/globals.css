@@ -111,8 +111,8 @@
 
   /* Selection feels like a highlighter pass */
   ::selection {
-    background-color: rgba(139, 92, 246, 0.25);
-    color: var(--color-paper-ink);
+    background-color: #c2400cab;
+    color: white;
   }
 }
 
@@ -173,6 +173,13 @@ textarea::placeholder {
   border: 1px solid var(--color-paper-hairline);
   border-radius: 8px;
   position: relative;
+  box-shadow:
+    0 1px 0 rgba(17, 17, 17, 0.05),
+    1px 1px 0 rgba(17, 17, 17, 0.03),
+    2px 2px 0 rgba(17, 17, 17, 0.02);
+}
+
+.paper-shadow{
   box-shadow:
     0 1px 0 rgba(17, 17, 17, 0.05),
     1px 1px 0 rgba(17, 17, 17, 0.03),
@@ -285,3 +292,29 @@ textarea::placeholder {
 }
 .animate-fadeIn { animation: fadeIn 0.35s ease both; }
 
+
+
+@media print {
+
+  nav,
+  header,
+  footer,
+  .print\\:hidden {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .paper-sheet,
+  .paper-card,
+  .report-card {
+    break-inside: avoid;
+  }
+}

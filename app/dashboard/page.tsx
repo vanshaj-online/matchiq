@@ -30,10 +30,10 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top masthead */}
-      <header className="sticky top-0 z-50 border-b border-(--color-paper-rule)">
+      <header className="sticky top-0 z-50 border-b border-(--color-paper-rule) bg-paper-cream w-full">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="paper-stamp uppercase">
-            m.iq
+            M·IQ
             <span className="hidden sm:inline paper-label"></span>
           </Link>
           <div className="flex items-center gap-3">

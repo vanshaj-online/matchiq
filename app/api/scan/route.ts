@@ -53,6 +53,17 @@ OUTPUT SCHEMA (return exactly this shape):
   
 }
 
+RULES FOR rewriteSuggestions:
+- ONLY rewrite bullets related to skills, responsibilities, achievements, or technologies — 
+  content that can be better aligned to the JD's language and requirements.
+- NEVER modify dates, durations, company names, degree names, or any factual/biographical 
+  information. These are immutable facts you have no authority to "correct."
+- If you cannot find 3 distinct resume bullets that would meaningfully benefit from 
+  JD-alignment rewriting, return fewer than 3 items. Do not pad with near-duplicate 
+  or repeated suggestions.
+- Each suggestion must target a different bullet point from the resume. Do not suggest 
+  multiple rewrites for the same line.
+
 FIELD DEFINITIONS:
 - matchScore: Overall 0-100 ATS + recruiter score. Below 40 = weak, 40-60 = partial, 60-80 = good, 80+ = strong.
 - matchVerdict: Derived from matchScore using the ranges above.
@@ -161,7 +172,6 @@ ${jdText}
 
     } catch (error) {
 
-        console.log(error)
         await Scan.findByIdAndUpdate(
             newScan._id,
             {

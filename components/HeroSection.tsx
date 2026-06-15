@@ -8,22 +8,23 @@ function HeroSection({ session }: { session: any }) {
             <div className="max-w-6xl mx-auto grid lg:grid-cols-12 gap-10  min-h-[calc(100vh-80px)] items-center">
                 {/* Left — masthead */}
                 <div className="lg:col-span-7">
-                    <span className="paper-label">Resume · Job Description · Analysis</span>
                     <h1 className="paper-display text-6xl sm:text-7xl font-bold tracking-tight leading-[0.92] mt-4">
-                        Read your <br className="hidden md:block" /> match,<span className="text-paper-secondary"> in print.</span>
+                        Stop wondering why they <span className="text-paper-secondary">never replied.</span>
                     </h1>
                     <hr className="paper-divider my-8" />
                     <p className="max-w-xl text-[17px] leading-relaxed text-paper-muted">
-                        MatchIQ reads your resume against any job description and returns a
-                        verdict. Just a quiet memo telling you what to fix.
+                        MatchIQ scans your resume against any job description and tells you exactly what's missing — before the ATS quietly filters you out.
                     </p>
 
-                    <div className="mt-8 flex flex-wrap gap-3">
+                    <div className="mt-8 space-y-6">
                         {session?.user ? (
                             <PrimaryBtn type="dashboard" >Get your verdict</PrimaryBtn>
                         ) : (
                             <PrimaryBtn type="signup" >Get started</PrimaryBtn>
                         )}
+                        <p className="text-sm tracking-tight text-neutral-600 font-medium">
+                            73% of resumes never reach a human. <br /> See if yours would.
+                        </p>
                     </div>
 
                 </div>
