@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat, Roboto, PT_Mono } from "next/font/google";
+import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -43,6 +44,17 @@ export default function RootLayout({
       }}
     >
       <body className="min-h-full flex flex-col">
+        <NextTopLoader
+          color="#c2410c"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={3}
+          crawl={true}
+          showSpinner={false}
+          easing="ease"
+          speed={200}
+          shadow="0 0 10px rgba(194, 65, 12, 0.5), 0 0 5px rgba(194, 65, 12, 0.5)"
+        />
         {children}
       </body>
     </html>
