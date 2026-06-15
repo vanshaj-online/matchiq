@@ -131,18 +131,15 @@ export default function NewScanPage() {
       <ToastContainer
         toastStyle={{
           fontSize: "13px",
-          color:'var(--color-paper-danger)'
+          color: 'var(--color-paper-danger)'
         }}
       />
       <header className="sticky top-0 z-50 bg-paper-cream/85 backdrop-blur-md border-b border-paper-rule">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-3">
-            <div className="bg-paper-ink text-white px-2 py-1 paper-mono text-xs tracking-[0.18em]">
-              MIQ
-            </div>
-            <span className="paper-display font-bold text-lg text-paper-ink tracking-tight">
-              MatchIQ
-            </span>
+          <Link href="/" className="paper-stamp uppercase">
+            M·IQ
+
+
           </Link>
           <Link href="/dashboard" className="paper-btn paper-btn-ghost">
             <ArrowLeft className="h-4 w-4" /> Back to ATS Report
