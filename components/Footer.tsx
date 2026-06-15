@@ -9,8 +9,6 @@ function Footer() {
                     <span>© 2026 MatchIQ</span>
                 </div>
                 <div className="flex items-center gap-5">
-                    <a href="#" className="hover:underline underline-offset-4">Privacy</a>
-                    <a href="#" className="hover:underline underline-offset-4">Terms</a>
                     <a href="mailto:singhvanshaj09@gmail.com" className="hover:underline underline-offset-4 inline-flex items-center gap-1">
                         <Mail className="h-3.5 w-3.5" /> singhvanshaj09@gmail.com
                     </a>

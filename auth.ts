@@ -27,7 +27,6 @@ export const { signIn, signOut, handlers, auth } = NextAuth({
 
                 if (!passwordValid) return null
 
-
                 return {
                     id: user._id.toString(),
                     name: user.name,
@@ -54,5 +53,8 @@ export const { signIn, signOut, handlers, auth } = NextAuth({
             return session;
         }
 
+    },
+    pages: {
+        signIn: '/login'
     }
 })

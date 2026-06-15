@@ -1,6 +1,11 @@
 import { PdfReader } from "pdfreader";
 import mammoth from "mammoth";
 
+const ALLOWED_TYPES = [
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
+
 export async function POST(req: Request) {
     const formData = await req.formData()
 
@@ -21,8 +26,25 @@ export async function POST(req: Request) {
 
     let text = ''
 
+    if (file.size > 1024 * 1024 * 5) {
+        return Response.json({
+            success: false,
+            message: 'Please upload a file less than 5MB'
+        }, {
+            status: 400
+        })
+    }
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+        return Response.json({
+            success: false,
+            message: 'Please upload a PDF or DOCX file'
+        }, {
+            status: 400
+        })
+    }
+
     if (file.name.endsWith('.pdf')) {
-        console.log('--------------------- running pdf block ------------------------')
         await new Promise<void>((resolve, reject) => {
             new PdfReader().parseBuffer(buffer, (err, item) => {
                 if (err) {
@@ -42,7 +64,6 @@ export async function POST(req: Request) {
         });
 
     } else if (file.name.endsWith('.docx')) {
-        console.log('--------------------- running docx block ------------------------')
 
         const result = await mammoth.extractRawText({
             buffer,

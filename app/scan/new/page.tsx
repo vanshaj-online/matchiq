@@ -13,6 +13,7 @@ import {
   Upload,
 } from "lucide-react";
 import type { AnalysisResult } from "@/lib/validators/analysis";
+import { Flip, ToastContainer, toast } from "react-toastify";
 
 export default function NewScanPage() {
   const [resumeText, setResumeText] = useState("");
@@ -80,7 +81,30 @@ export default function NewScanPage() {
         body: JSON.stringify({ resumeText, jdText }),
       });
 
-      if (!response.ok) throw new Error('Failed to analyze resume. Please try again.');
+      if (!response.ok) {
+        console.log('try block error', response.status)
+
+        if (response.status == 429) {
+
+          toast.error('You have reached the daily scan limit. Please try again tomorrow.', {
+            position: "top-right",
+            autoClose: false,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            progress: undefined,
+            theme: "light",
+            transition: Flip,
+          });
+
+          return
+        }
+
+        throw new Error('Failed to analyze resume. Please try again.');
+
+      }
+
 
       const data = await response.json();
 
@@ -92,6 +116,7 @@ export default function NewScanPage() {
       else throw new Error(data.message || 'Analysis failed.');
 
     } catch (err: any) {
+      console.log('catch block error')
 
       setError(err.message || 'Failed to analyze resume.');
 
@@ -105,6 +130,12 @@ export default function NewScanPage() {
 
   return (
     <div className="min-h-screen">
+      <ToastContainer
+        toastStyle={{
+          fontSize: "13px",
+          color:'var(--color-paper-danger)'
+        }}
+      />
       <header className="sticky top-0 z-50 bg-paper-cream/85 backdrop-blur-md border-b border-paper-rule">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-3">

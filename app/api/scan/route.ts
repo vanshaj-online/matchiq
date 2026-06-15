@@ -86,6 +86,33 @@ export async function POST(req: Request) {
                 { status: 400 }
             )
         }
+
+        const DAILY_SCAN_LIMIT: number = 5
+
+        const startOfToday = new Date()
+        startOfToday.setHours(0, 0, 0, 0)
+
+        const scanToday = await Scan.countDocuments({
+            userId: session!.user!.id,
+            createdAt: {
+                $gte: startOfToday,
+            },
+            status: {
+                $ne: "failed"
+            }
+        })
+
+        if (scanToday >= DAILY_SCAN_LIMIT) {
+
+            return Response.json(
+                {
+                    success: false,
+                    message: "You have reached the daily scan limit of 5 scans"
+                },
+                { status: 429 }
+            )
+        }
+
         newScan = await Scan.create({
             userId: session!.user!.id,
             resumeText,
