@@ -79,6 +79,8 @@ export async function POST(req: Request) {
 
     let newScan = null
 
+    const currentYear = new Date().getFullYear();
+
     try {
 
         const session = await auth()
@@ -139,6 +141,9 @@ export async function POST(req: Request) {
                 temperature: 0.2,
             },
             contents: `
+CURRENT YEAR: 
+${currentYear}
+
 RESUME:
 ${resumeText}
 
