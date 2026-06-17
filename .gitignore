@@ -23,6 +23,7 @@
 # misc
 .DS_Store
 *.pem
+LLM_FAILURE.md
 
 # debug
 npm-debug.log*

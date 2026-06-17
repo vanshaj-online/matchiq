@@ -279,7 +279,7 @@ export default async function ScanResultPage({
 
                   <div className="paper-sheet p-6">
                     <div className="flex items-center gap-2 mb-4">
-                      <span className="paper-label">quick wins</span>
+                      <span className="paper-label">AI suggested improvements</span>
                     </div>
                     <ul className="space-y-3">
                       {result.quickWins.map((win, i) => (
