@@ -26,7 +26,10 @@ const ptMono = PT_Mono({
 
 export const metadata: Metadata = {
   title: "MatchIQ",
-  description: "Resume ↔ Job Description compatibility",
+  description: "AI powered ATS resume analyzer that compares resumes against job descriptions and provides actionable insights.",
+  verification: {
+    google: '8pbaWqdqDMvPeJm6Gh7poItvAS00o-xsUgoMCsTNZ40'
+  }
 };
 
 export default function RootLayout({
