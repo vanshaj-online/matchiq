@@ -1,4 +1,5 @@
 import React from "react";
+import Logo from "@/components/Logo";
 
 export default function ScanResultLoading() {
   return (
@@ -6,8 +7,8 @@ export default function ScanResultLoading() {
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 bg-paper-cream/85 backdrop-blur-md border-b border-paper-rule">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="text-paper-ink px-2 py-1 paper-stamp uppercase text-xs tracking-[0.18em] opacity-50">
-            M·IQ
+          <div className="opacity-50">
+            <Logo />
           </div>
           <div className="w-24 h-8 bg-neutral-200/60 rounded-sm animate-pulse" />
         </div>

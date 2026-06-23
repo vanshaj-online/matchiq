@@ -1,4 +1,5 @@
 import React from "react";
+import Logo from "@/components/Logo";
 
 export default function DashboardLoading() {
   return (
@@ -6,8 +7,8 @@ export default function DashboardLoading() {
       {/* Top masthead */}
       <header className="sticky top-0 z-50 border-b border-(--color-paper-rule) bg-paper-cream w-full">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="paper-stamp uppercase text-paper-muted opacity-50">
-            M·IQ
+          <div className="opacity-50">
+            <Logo />
           </div>
           <div className="flex items-center gap-3">
             <div className="w-20 h-8 bg-neutral-200/60 rounded-sm animate-pulse" />

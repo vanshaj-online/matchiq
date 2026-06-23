@@ -27,6 +27,9 @@ const ptMono = PT_Mono({
 export const metadata: Metadata = {
   title: "MatchIQ",
   description: "AI powered ATS resume analyzer that compares resumes against job descriptions and provides actionable insights.",
+  icons: {
+    icon: "/icon.svg",
+  },
   verification: {
     google: '8pbaWqdqDMvPeJm6Gh7poItvAS00o-xsUgoMCsTNZ40'
   }

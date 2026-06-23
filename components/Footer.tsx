@@ -1,12 +1,16 @@
 import { Mail } from "lucide-react";
+import Link from 'next/link';
+import Logo from './Logo';
 
 function Footer() {
     return (
         <footer className="border-t border-paper-rule/70 px-6 py-10">
             <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 paper-label">
                 <div className="flex items-center gap-3">
-                    <div className="paper-stamp">M·IQ</div>
-                    <span>© 2026 MatchIQ</span>
+                    <Link href="/" className="hover:opacity-90 transition-opacity">
+                        <Logo />
+                    </Link>
+                    <span>© 2026</span>
                 </div>
                 <div className="flex items-center gap-5">
                     <a href="mailto:singhvanshaj09@gmail.com" className="hover:underline underline-offset-4 inline-flex items-center gap-1">

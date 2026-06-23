@@ -12,6 +12,7 @@ import {
   ArrowLeft,
   Upload,
 } from "lucide-react";
+import Logo from "@/components/Logo";
 import type { AnalysisResult } from "@/lib/validators/analysis";
 import { Flip, ToastContainer, toast } from "react-toastify";
 
@@ -136,10 +137,8 @@ export default function NewScanPage() {
       />
       <header className="sticky top-0 z-50 bg-paper-cream/85 backdrop-blur-md border-b border-paper-rule">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="paper-stamp uppercase">
-            M·IQ
-
-
+          <Link href="/" className="hover:opacity-90 transition-opacity">
+            <Logo />
           </Link>
           <Link href="/dashboard" className="paper-btn paper-btn-ghost">
             <ArrowLeft className="h-4 w-4" /> Back to ATS Report

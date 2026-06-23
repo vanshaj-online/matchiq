@@ -6,6 +6,9 @@ import { FileQuestion, Home, ArrowLeft } from "lucide-react";
 export const metadata = {
   title: "404 - Page Not Found | MatchIQ",
   description: "The page or document resource you requested could not be located in our system archives.",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function NotFound() {
@@ -18,7 +21,7 @@ export default function NotFound() {
 
           {/* Tactile Stamp & Icon */}
           <div className="flex flex-col items-center gap-4">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-paper-cream-soft border border-paper-rule text-paper-muted">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full  text-paper-muted">
               <FileQuestion className="h-6 w-6 text-paper-ink" />
             </div>
 

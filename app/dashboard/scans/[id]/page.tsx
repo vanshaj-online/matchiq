@@ -11,6 +11,7 @@ import type { AnalysisResult } from "@/lib/validators/analysis";
 import { tone } from "@/lib/colorTone";
 import JDModal from '@/components/JDModal';
 import ReportWrapper from '@/components/ReportWrapper';
+import Logo from '@/components/Logo';
 
 const summaryBase =
   "flex items-center justify-between gap-3 cursor-pointer select-none list-none " +
@@ -108,8 +109,8 @@ export default async function ScanResultPage({
     <div className="min-h-screen relative">
       <header className="sticky top-0 z-50 bg-paper-cream/85 backdrop-blur-md border-b border-paper-rule">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="text-paper-ink px-2 py-1 paper-stamp uppercase text-xs tracking-[0.18em]">
-            M·IQ
+          <Link href="/" className="hover:opacity-90 transition-opacity">
+            <Logo />
           </Link>
 
           <Link href="/dashboard" className="paper-btn paper-btn-ghost">

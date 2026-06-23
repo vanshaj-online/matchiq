@@ -6,7 +6,8 @@ import connectDB from "@/lib/db";
 import { Scan } from "@/models/scan.model";
 import { tone } from '@/lib/colorTone';
 import DeleteBtn from '@/components/DeleteBtn';
-import PrimaryBtn from '@/components/PrimaryBtn'
+import PrimaryBtn from '@/components/PrimaryBtn';
+import Logo from '@/components/Logo';
 
 const formatDate = (date: Date) => {
   if (!date) return "";
@@ -32,9 +33,8 @@ export default async function DashboardPage() {
       {/* Top masthead */}
       <header className="sticky top-0 z-50 border-b border-(--color-paper-rule) bg-paper-cream w-full">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="paper-stamp uppercase">
-            M·IQ
-            <span className="hidden sm:inline paper-label"></span>
+          <Link href="/" className="hover:opacity-90 transition-opacity">
+            <Logo />
           </Link>
           <div className="flex items-center gap-3">
             <form action={handleSignOut}>
