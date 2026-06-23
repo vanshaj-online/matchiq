@@ -70,12 +70,6 @@ function HeroSection({ session }: { session: any }) {
                             </li>
                         </ul>
 
-                        <hr className="paper-divider my-6" />
-                        <div className="flex items-center justify-between paper-label">
-                            <span className="flex items-center gap-1">
-                                Reader · <Logo iconClassName="h-3.5 w-3.5" showText={true} textClassName="text-xs text-paper-muted font-mono" />
-                            </span>
-                        </div>
                     </div>
                 </div>
             </div>
